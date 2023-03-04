@@ -7,7 +7,7 @@ import { signOut } from '@/contexts/AuthContext';
 import configEnv from './config';
 
 export function setupAPIClient(ctx = undefined) {
-    const apiUrl = configEnv === "PROD" ? process.env.NEXT_PUBLIC_API_URL_PROD : process.env.NEXT_PUBLIC_API_URL_HML;
+    const apiUrl = configEnv === "PROD" ? "https://backend-barber.up.railway.app" : process.env.NEXT_PUBLIC_API_URL_HML;
     let cookies = parseCookies(ctx);
 
     const api = axios.create({
