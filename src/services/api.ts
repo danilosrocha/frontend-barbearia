@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import axios, { AxiosError } from 'axios';
 import { parseCookies } from 'nookies';
 
@@ -22,7 +21,7 @@ export function setupAPIClient(ctx = undefined) {
     }, (error: AxiosError) => {
         if (error.response.status === 401) {
             if (typeof window !== undefined) {
-                toast.warning("Atualize a página!")
+                signOut()
             } else {
                 return Promise.reject(new AuthTokenError())
             }
