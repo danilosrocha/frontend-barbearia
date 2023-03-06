@@ -3,6 +3,7 @@ import { destroyCookie, setCookie, parseCookies } from "nookies";
 import Router from "next/router";
 import { api } from "@/services/apiClient";
 import { toast } from 'react-toastify';
+import { setupAPIClient } from "@/services/api";
 
 interface AuthContextData {
     user: UserProps
@@ -140,17 +141,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     async function updateUser({ name, address }: UserUpdateProps) {
         try {
-
-            const response = await api.put('/user/update', {
-                name,
-                address,
+            const apiClient = setupAPIClient();
+            await apiClient.put('/user/update', {
+                name: name,
+                address: address,
             })
-            console.log(response);
 
             toast.success("Dados alterados com sucesso!")
-        } catch (error) {
+
+        } catch (err) {
             toast.error("Erro ao atualizar dados!")
         }
+
     }
     return (
         <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp, logoutUser, updateUser }}>

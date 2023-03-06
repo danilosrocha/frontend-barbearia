@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { IoMdPerson } from 'react-icons/io'
 import { canSSRAuth } from "@/utils/canSSRAuth";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { ModalInfo } from "@/components/modal";
@@ -33,6 +33,7 @@ export default function Dashboard({ schedule }: DashBoardProps) {
   const [loader, setLoader] = useState(false)
   const [loadingFinish, setLoadingFinish] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
+
 
   function handleRegisterCut() {
     setLoader(true)
