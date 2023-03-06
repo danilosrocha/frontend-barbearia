@@ -62,7 +62,7 @@ export default function New({ haircuts }: HaircutsProps) {
 
               <Flex mb={isMobile ? "10px" : "0"} >
 
-                <Link href="/dashboard" onClick={handleBackButton}>
+                <Link href="/schedule" onClick={handleBackButton}>
                   <Button
                     isLoading={isLoading} color="white" bg="barber.400" _hover={{ bg: "gray.900" }} display="flex" alignItems="center" justifyContent="center"
                   >
@@ -135,7 +135,7 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
     console.log(error);
     return {
       redirect: {
-        destination: '/dashboard',
+        destination: '/schedule',
         permanent: false
       }
     }

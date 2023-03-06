@@ -13,7 +13,7 @@ import {
 
 import { FiUser, FiScissors } from 'react-icons/fi'
 import { FaMoneyBillAlt } from 'react-icons/fa'
-import { ScheduleItem } from '../../pages/dashboard'
+import { ScheduleItem } from '../../pages/schedule'
 
 interface ModalInfoProps {
     isOpen: boolean;

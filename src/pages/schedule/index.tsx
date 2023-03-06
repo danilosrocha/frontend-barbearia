@@ -21,11 +21,11 @@ export interface ScheduleItem {
   }
 }
 
-interface DashBoardProps {
+interface ScheduleProps {
   schedule: ScheduleItem[]
 }
 
-export default function Dashboard({ schedule }: DashBoardProps) {
+export default function Schedule({ schedule }: ScheduleProps) {
   const { finishCut } = useContext(HaircutContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [list, setList] = useState(schedule)

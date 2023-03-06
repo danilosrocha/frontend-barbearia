@@ -105,7 +105,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
                 customer,
                 haircut_id
             })
-            Router.push('/dashboard')
+            Router.push('/schedule')
             toast.success("Agendamento realizado com sucesso!")
         } catch (error) {
             console.log(error);
@@ -121,7 +121,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
                     schedule_id
                 }
             })
-            Router.push('/dashboard')
+            Router.push('/schedule')
             toast.success("Serviço finalizado!")
         } catch (error) {
             console.log(error);

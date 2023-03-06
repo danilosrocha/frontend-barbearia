@@ -142,7 +142,7 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
 
     return {
       redirect: {
-        destination: '/dashboard',
+        destination: '/schedule',
         permanent: false
       }
     }

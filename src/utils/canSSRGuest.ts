@@ -10,7 +10,7 @@ export function canSSRGuest<P>(fn: GetServerSideProps<P>) {
         if (token) {
             return {
                 redirect: {
-                    destination: '/dashboard',
+                    destination: '/schedule',
                     permanent: false
                 }
             }

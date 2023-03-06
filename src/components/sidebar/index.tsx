@@ -32,7 +32,7 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'Agenda', icon: FiScissors, route: '/dashboard' },
+    { name: 'Agenda', icon: FiScissors, route: '/schedule' },
     { name: 'Cortes', icon: FiClipboard, route: '/haircuts' },
     { name: 'Minha Conta', icon: FiSettings, route: '/profile' },
 ]
@@ -99,7 +99,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         >
 
             <Flex h="20" alignItems="center" justifyContent="space-between" mx="8">
-                <Link href="/dashboard">
+                <Link href="/schedule">
                     <Flex cursor="pointer" userSelect="none" flexDirection="row">
                         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="white">Barber</Text>
                         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="button.cta">Client</Text>

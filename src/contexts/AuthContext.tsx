@@ -106,7 +106,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             toast.success("Logado com sucesso!")
 
-            Router.push('/dashboard')
+            Router.push('/schedule')
 
         } catch (error) {
             toast.error("Erro ao acessar!")
