@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { IoMdPerson } from 'react-icons/io'
 import { canSSRAuth } from "@/utils/canSSRAuth";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { ModalInfo } from "@/components/modal";
@@ -103,33 +103,31 @@ export default function Schedule({ schedule, days }: ScheduleProps) {
 
             {days && days.map(date => {
               return (
-                <>
+                <React.Fragment key={date}>
                   <Heading fontSize="xl" mb={2} color="white" ml={2} fontWeight="bold">Dia: {date}</Heading>
                   {list?.map(item => {
                     if (item.date === date) {
                       return (
-                        <>
-                          <ChackLink key={item?.id} onClick={() => handleClickItem(item)} >
-                            <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
+                        <ChackLink key={item?.id} onClick={() => handleClickItem(item)} >
+                          <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between" key={item?.id}>
 
-                              <Flex direction="row" align="center" mb={isMobile ? "10px" : "0"} >
-                                <IoMdPerson color="#fba931" size={28} />
-                                <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{item?.customer} - </Text>
-                                <Text color="white" fontWeight="bold" ml={1}>{(item?.time)}h</Text>
-                              </Flex>
-                              <Flex alignItems={isMobile ? "flex-start" : "center"} justifyContent="space-between" w="55%" direction={isMobile ? "column" : "row"}>
-                                <Text color="white" justifySelf="flex-end" fontWeight="bold">{item?.haircut?.name}</Text>
-                                <Text color="white" fontWeight="bold">R$ {Number(item?.haircut?.price).toFixed(2)}</Text>
-                              </Flex>
-
+                            <Flex direction="row" align="center" mb={isMobile ? "10px" : "0"} key={`${item?.id}-1`}>
+                              <IoMdPerson color="#fba931" size={28} />
+                              <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{item?.customer} - </Text>
+                              <Text color="white" fontWeight="bold" ml={1}>{(item?.time)}h</Text>
                             </Flex>
-                          </ChackLink>
-                        </>
+                            <Flex alignItems={isMobile ? "flex-start" : "center"} justifyContent="space-between" w="55%" direction={isMobile ? "column" : "row"} key={`${item?.id}-2`}>
+                              <Text color="white" justifySelf="flex-end" fontWeight="bold">{item?.haircut?.name}</Text>
+                              <Text color="white" fontWeight="bold">R$ {Number(item?.haircut?.price).toFixed(2)}</Text>
+                            </Flex>
+
+                          </Flex>
+                        </ChackLink>
                       );
                     }
                     return null;
                   })}
-                </>
+                </React.Fragment>
               )
             })}
 

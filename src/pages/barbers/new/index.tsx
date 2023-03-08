@@ -3,16 +3,11 @@ import { Sidebar } from "@/components/sidebar";
 import Head from "next/head";
 import Link from "next/link";
 import { FiChevronLeft } from 'react-icons/fi'
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { canSSRAuth } from "@/utils/canSSRAuth";
 import { toast } from "react-toastify";
 import { BarberContext } from "@/contexts/BarberContext";
 import { parseTimeString } from "@/utils/validatedTime";
-
-interface NewHaircutProps {
-  subscriptions: string,
-  count: number
-}
 
 export default function NewBarber() {
   const { registerBarber } = useContext(BarberContext)
@@ -20,7 +15,6 @@ export default function NewBarber() {
   const [startWork, setStartWork] = useState("07:00")
   const [endWork, setEndWork] = useState("20:00")
   const [workTime, setWorkTime] = useState("40")
-  const [avaliableTimes, setAvaliableTimes] = useState([])
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
@@ -31,7 +25,8 @@ export default function NewBarber() {
       return
     }
     setLoader(true)
-    await registerBarber({ barber_name: name, available_at: avaliableTimes })
+    const response = await handleValidatedTime()
+    await registerBarber({ barber_name: name, available_at: response })
     setLoader(false)
   }
 
@@ -40,17 +35,8 @@ export default function NewBarber() {
   }
 
   async function handleValidatedTime() {
-    parseTimeString(startWork, endWork, Number(workTime)).then(value => {
-      setAvaliableTimes(value)
-    }).catch(err => {
-      toast.error("Informe no formato correto!")
-    })
+    return parseTimeString(startWork, endWork, Number(workTime))
   }
-
-  useEffect(() => {
-    handleValidatedTime()
-  }, [startWork, endWork, workTime])
-
 
   return (
     <>
