@@ -7,9 +7,9 @@ import {
     ModalBody,
     ModalCloseButton,
 } from '@chakra-ui/react'
-import { useState } from 'react';
 import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+
+
 
 interface ModalInfoProps {
     isOpen: boolean;
@@ -22,7 +22,7 @@ interface ModalInfoProps {
 
 export function ModalCalendary({ isOpen, onOpen, onClose, date, setDate, setDateSelected }: ModalInfoProps) {
     async function handleChange(date: Date) {
-        const newDate = await validatedDate(`${date?.getDate()}/${date?.getMonth() + 1}`)
+        const newDate = validatedDate(`${date?.getDate()}/${date?.getMonth() + 1}`)
         setDateSelected(newDate)
         onClose()
     }
@@ -33,11 +33,11 @@ export function ModalCalendary({ isOpen, onOpen, onClose, date, setDate, setDate
                 <ModalHeader color="white">Selecione a data</ModalHeader>
                 <ModalCloseButton color="white" />
 
-                <ModalBody alignItems="center" justifyContent="center">
+                <ModalBody alignItems="center" justifyContent="center" mb={4}>
                     <Calendar onChange={(e: Date) => {
                         setDate(e)
                         handleChange(e)
-                    }} value={date} />
+                    }} value={date} locale="pt-br" />
                 </ModalBody>
 
             </ModalContent>

@@ -5,6 +5,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { HaircutProvider } from '@/contexts/HaircutContext';
 import { BarberProvider } from '@/contexts/BarberContext';
+import 'react-calendar/dist/Calendar.css';
+import './App.css';
 
 const colors = {
   barber: {
@@ -27,6 +29,7 @@ const theme = extendTheme({ colors });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
+
     <ChakraProvider theme={theme}>
       <AuthProvider>
         <HaircutProvider>
@@ -37,5 +40,6 @@ export default function App({ Component, pageProps }: AppProps) {
         </HaircutProvider>
       </AuthProvider>
     </ChakraProvider>
+
   )
 }
