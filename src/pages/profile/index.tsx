@@ -26,10 +26,6 @@ export default function Profile({ user, premium }: ProfileProps) {
   const [address, setAddress] = useState(user?.address || "")
   const [loader, setLoader] = useState(false)
 
-  useEffect(() => {
-    // window.location.reload();
-  }, [])
-
   async function handleLogout() {
     await logoutUser()
   }
@@ -70,7 +66,7 @@ export default function Profile({ user, premium }: ProfileProps) {
 
               <Flex direction="column" w="85%" >
                 <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Endereço:</Text>
-                <Input color="white" placeholder="Endereço da Barbearia" w="100%" bg="gray.900" type="text" size="lg"
+                <Input color="white" placeholder="Endereço da barbearia" w="100%" bg="gray.900" type="text" size="lg"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                 />
