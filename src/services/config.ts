@@ -1,5 +1,5 @@
 type configEnvProps = "PROD" | "HML"
 
-const configEnv: configEnvProps = "HML"
+const configEnv: configEnvProps = "PROD"
 
 export default configEnv;
