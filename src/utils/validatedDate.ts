@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export async function validatedDate(date: string,) {
+export function validatedDate(date: string | Date) {
     const newDate = moment(date, "DD/MM").format("DD/MM")
 
     return newDate;

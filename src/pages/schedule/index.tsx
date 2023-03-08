@@ -40,7 +40,6 @@ export default function Schedule({ schedule, days }: ScheduleProps) {
   const [loadingFinish, setLoadingFinish] = useState(false)
   const [loadingCancel, setLoadingCancel] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
-  console.log(days);
 
   function handleRegisterCut() {
     setLoader(true)

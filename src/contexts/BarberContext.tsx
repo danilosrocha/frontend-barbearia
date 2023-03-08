@@ -8,6 +8,7 @@ interface BarberContextData {
     listBarbers: (credential: string) => Promise<BarbersItem[]>
     updateDataBarber: (credential: UpdateBarberProps) => Promise<void>
     deleteBarber: (credential: string) => Promise<void>
+    getTimeAvaliable: (credential: GetTimeAvaliableProps) => Promise<GetAvalibleTimesProps>
 }
 
 interface BarbersItem {
@@ -32,9 +33,20 @@ interface UpdateBarberProps {
     barber_name: string
 }
 
-interface RegisteNewCutProps {
-    customer: string
-    Barber_id: string
+interface GetAvalibleTimesProps {
+    id: string
+    barber_name: string
+    services: Service
+}
+
+interface Service {
+    date: string
+    times: string[]
+}
+
+interface GetTimeAvaliableProps {
+    barber_id: string
+    date: string
 }
 
 
@@ -44,10 +56,6 @@ export function BarberProvider({ children }: BarberProviderProps) {
 
     async function registerBarber({ barber_name, available_at }: RegisterBarberProps) {
         try {
-            console.log({
-                barber_name, available_at
-            });
-
             const apiClient = setupAPIClient();
             await apiClient.post('/barber', {
                 barber_name,
@@ -62,20 +70,21 @@ export function BarberProvider({ children }: BarberProviderProps) {
         }
     }
 
-    // async function registerTimeBarber({ available_at, date, }: ) {
-    //     try {
-    //         const apiClient = setupAPIClient();
-    //         await apiClient.post('/barber', {
-    //             barber_name,
-    //         })
+    async function getTimeAvaliable({ barber_id, date }: GetTimeAvaliableProps) {
+        try {
+            const apiClient = setupAPIClient();
+            const response = await apiClient.get('/barber/times', {
+                params: {
+                    barber_id,
+                    date
+                }
+            })
 
-    //         Router.push('/barbers')
-    //         toast.success("Barbeiro cadastrado com sucesso!")
-    //     } catch (err) {
-    //         console.log(err);
-    //         toast.error("Erro ao cadastrar barbeiro!")
-    //     }
-    // }
+            return response.data
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     async function listBarbers(status: string) {
 
@@ -83,7 +92,7 @@ export function BarberProvider({ children }: BarberProviderProps) {
 
         try {
             const apiClient = setupAPIClient();
-            const response = await apiClient.get('/Barbers', {
+            const response = await apiClient.get('/barbers', {
                 params: {
                     status: boStats
                 }
@@ -96,11 +105,6 @@ export function BarberProvider({ children }: BarberProviderProps) {
     }
 
     async function updateDataBarber({ barber_name, barber_id }: UpdateBarberProps) {
-        console.log({
-            barber_name,
-            barber_id
-        });
-
         try {
             const apiClient = setupAPIClient();
             await apiClient.put('/barber', {
@@ -118,8 +122,6 @@ export function BarberProvider({ children }: BarberProviderProps) {
 
     async function deleteBarber(barber_id: string) {
         try {
-            console.log(barber_id);
-
             const apiClient = setupAPIClient();
             await apiClient.put('/barber/del', {
                 barber_id
@@ -132,9 +134,8 @@ export function BarberProvider({ children }: BarberProviderProps) {
         }
     }
 
-
     return (
-        <BarberContext.Provider value={{ registerBarber, updateDataBarber, deleteBarber, listBarbers }}>
+        <BarberContext.Provider value={{ registerBarber, updateDataBarber, deleteBarber, listBarbers, getTimeAvaliable }}>
             {children}
         </BarberContext.Provider>
     )

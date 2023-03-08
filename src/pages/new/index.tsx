@@ -10,6 +10,8 @@ import { HaircutContext } from "@/contexts/HaircutContext";
 import { toast } from "react-toastify";
 import { ModalCalendary } from "@/components/modalCalendary";
 import moment from 'moment';
+import { BarberContext } from "@/contexts/BarberContext";
+import { validatedDate } from "@/utils/validatedDate";
 
 interface HaircutsItem {
   id: string
@@ -34,13 +36,16 @@ interface HaircutsProps {
 
 export default function New({ haircuts, barbers }: HaircutsProps) {
   const { registerNewCut } = useContext(HaircutContext)
-  const currentDay = `${moment().date()}/${moment().month() + 1}`
+  const { getTimeAvaliable } = useContext(BarberContext)
+
+  const currentDay = validatedDate(`${moment().date()}/${moment().month() + 1}`)
   const [customer, setCustomer] = useState("")
   const [haircutSelected, setHaircutSelected] = useState(haircuts[0])
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [barberSelected, setBarberSelected] = useState(barbers[0])
-  const [timeSelected, setTimeSelected] = useState("07:00")
+  const [availableTime, setAvailableTime] = useState<string[]>()
+  const [timeSelected, setTimeSelected] = useState<string>()
   const [date, setDate] = useState<Date>();
   const [dateSelected, setDateSelected] = useState<string>(currentDay);
   const [barber, setBarber] = useState<BarbersItem>()
@@ -79,7 +84,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
     setHaircutSelected(haircutItem)
   }
 
-  function handleChangeSelectBarber(id: string) {
+  async function handleChangeSelectBarber(id: string) {
     const barber = barbers?.find(item => item.id === id)
     setBarberSelected(barber)
   }
@@ -96,7 +101,17 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   useEffect(() => {
     barberAvaliableTime()
 
-  }, [barberSelected])
+    if (barberSelected && dateSelected) {
+      getTimeAvaliable({ barber_id: barberSelected?.id, date: dateSelected }).then((value) => {
+        const result = barberSelected?.available_at.filter(item => !value?.services?.times.includes(item));
+        setAvailableTime(result)
+        if (!timeSelected) {
+          setTimeSelected(result[0])
+        }
+      });
+    }
+
+  }, [barberSelected, dateSelected])
 
   return (
     <>
@@ -163,7 +178,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                 <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Selecione o horário:</Text>
                 <Flex direction={isMobile ? "column" : "row"} w="100%" align="center">
                   <Select color="white" w="100%" bg="gray.900" size="lg" mr={isMobile ? 0 : 3} mb={isMobile ? 4 : 0} onChange={(e) => handleChangeSelectTime(e.target.value)}>
-                    {barberSelected && barberSelected?.available_at?.map(item => (
+                    {availableTime && availableTime.map(item => (
                       <option style={{ background: "#1b1c29" }} key={item} value={item}>{item}</option>
                     ))}
                   </Select>
