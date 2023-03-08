@@ -4,6 +4,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { HaircutProvider } from '@/contexts/HaircutContext';
+import { BarberProvider } from '@/contexts/BarberContext';
 
 const colors = {
   barber: {
@@ -29,8 +30,10 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChakraProvider theme={theme}>
       <AuthProvider>
         <HaircutProvider>
-          <Component {...pageProps} />
-          <ToastContainer autoClose={2500} />
+          <BarberProvider>
+            <Component {...pageProps} />
+            <ToastContainer autoClose={2500} />
+          </BarberProvider>
         </HaircutProvider>
       </AuthProvider>
     </ChakraProvider>

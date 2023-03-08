@@ -12,6 +12,8 @@ import { ModalInfo } from "@/components/modal";
 export interface ScheduleItem {
   id: string
   customer: string
+  time: string
+  date: string
   haircut: {
     id: string
     name: string
@@ -19,21 +21,26 @@ export interface ScheduleItem {
     status: boolean
     user_id: string
   }
+  barber: {
+    barber_name: string
+  }
 }
 
 interface ScheduleProps {
   schedule: ScheduleItem[]
+  days: string[]
 }
 
-export default function Schedule({ schedule }: ScheduleProps) {
+export default function Schedule({ schedule, days }: ScheduleProps) {
   const { finishCut } = useContext(HaircutContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [list, setList] = useState(schedule)
   const [service, setService] = useState<ScheduleItem>()
   const [loader, setLoader] = useState(false)
   const [loadingFinish, setLoadingFinish] = useState(false)
+  const [loadingCancel, setLoadingCancel] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
-
+  console.log(days);
 
   function handleRegisterCut() {
     setLoader(true)
@@ -46,7 +53,7 @@ export default function Schedule({ schedule }: ScheduleProps) {
 
   async function handleFinish(id: string) {
     setLoadingFinish(true)
-    await finishCut(id)
+    await finishCut({ id, status: "finish" })
 
     const filterItem = list?.filter(item => {
       return (item?.id !== id)
@@ -54,6 +61,19 @@ export default function Schedule({ schedule }: ScheduleProps) {
     setList(filterItem)
     onClose()
     setLoadingFinish(false)
+
+  }
+
+  async function handleCancelSchedule(id: string,) {
+    setLoadingCancel(true)
+    await finishCut({ id, status: "cancel" })
+
+    const filterItem = list?.filter(item => {
+      return (item?.id !== id)
+    })
+    setList(filterItem)
+    onClose()
+    setLoadingCancel(false)
   }
 
   return (
@@ -81,29 +101,43 @@ export default function Schedule({ schedule }: ScheduleProps) {
 
             </Flex>
 
-            {list?.map(item => {
-
+            {days && days.map(date => {
               return (
-                <ChackLink key={item?.id} onClick={() => handleClickItem(item)} >
-                  <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
+                <>
+                  <Heading fontSize="xl" mb={2} color="white" ml={2} fontWeight="bold">Dia: {date}</Heading>
+                  {list?.map(item => {
+                    if (item.date === date) {
+                      return (
+                        <>
+                          <ChackLink key={item?.id} onClick={() => handleClickItem(item)} >
+                            <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
 
-                    <Flex direction="row" align="center" justify="center" mb={isMobile ? "10px" : "0"}>
-                      <IoMdPerson color="#fba931" size={28} />
-                      <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{item?.customer}</Text>
-                    </Flex>
-                    <Text color="white" fontWeight="bold">{item?.haircut?.name}</Text>
-                    <Text color="white" fontWeight="bold">R$ {Number(item?.haircut?.price).toFixed(2)}</Text>
+                              <Flex direction="row" align="center" mb={isMobile ? "10px" : "0"} >
+                                <IoMdPerson color="#fba931" size={28} />
+                                <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{item?.customer} - </Text>
+                                <Text color="white" fontWeight="bold" ml={1}>{(item?.time)}h</Text>
+                              </Flex>
+                              <Flex alignItems={isMobile ? "flex-start" : "center"} justifyContent="space-between" w="55%" direction={isMobile ? "column" : "row"}>
+                                <Text color="white" justifySelf="flex-end" fontWeight="bold">{item?.haircut?.name}</Text>
+                                <Text color="white" fontWeight="bold">R$ {Number(item?.haircut?.price).toFixed(2)}</Text>
+                              </Flex>
 
-                  </Flex>
-                </ChackLink>
-              );
+                            </Flex>
+                          </ChackLink>
+                        </>
+                      );
+                    }
+                    return null;
+                  })}
+                </>
+              )
             })}
-
 
           </Flex>
 
         </Flex>
       </Sidebar >
+
       <ModalInfo
         isOpen={isOpen}
         onOpen={onOpen}
@@ -111,6 +145,8 @@ export default function Schedule({ schedule }: ScheduleProps) {
         data={service}
         finishService={() => handleFinish(service?.id)}
         loadingFinish={loadingFinish}
+        loadingCancel={loadingCancel}
+        cancelService={() => handleCancelSchedule(service?.id)}
       />
     </>
   )
@@ -122,10 +158,12 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
 
     const apiClient = setupAPIClient(ctx)
     const response = await apiClient.get('/schedules')
+    const days = await apiClient.get('/schedule/days')
 
     return {
       props: {
-        schedule: response.data
+        schedule: response.data,
+        days: days.data
       }
 
     }
@@ -133,7 +171,8 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
     console.log(error);
     return {
       props: {
-        schedule: []
+        schedule: [],
+        days: []
       }
     }
 

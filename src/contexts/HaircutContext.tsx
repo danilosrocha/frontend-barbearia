@@ -9,7 +9,7 @@ interface HaircutContextData {
     listHaircuts: (credential: string) => Promise<HaircutsItem[]>
     updateHaircut: (credential: UpdateHaircutProps) => Promise<void>
     registerNewCut: (credential: RegisteNewCutProps) => Promise<void>
-    finishCut: (credential: string) => Promise<void>
+    finishCut: (credential: FinishCutProps) => Promise<void>
 }
 
 interface HaircutsItem {
@@ -39,6 +39,14 @@ interface UpdateHaircutProps {
 interface RegisteNewCutProps {
     customer: string
     haircut_id: string
+    barber_id: string
+    time: string
+    date: string
+}
+
+interface FinishCutProps {
+    id: string,
+    status: string
 }
 
 
@@ -98,31 +106,42 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
         }
     }
 
-    async function registerNewCut({ customer, haircut_id }: RegisteNewCutProps) {
+    async function registerNewCut({ customer, haircut_id, barber_id, date, time }: RegisteNewCutProps) {
         try {
             const apiClient = setupAPIClient();
             await apiClient.post('/schedule', {
                 customer,
-                haircut_id
+                haircut_id,
+                barber_id,
+                date,
+                time
             })
             Router.push('/schedule')
             toast.success("Agendamento realizado com sucesso!")
         } catch (error) {
-            console.log(error);
+            if (error.response.data.error === "Error: Schedule already exists!") {
+                toast.warning("Este horário já possui um cliente agendado!")
+                return
+            }
             toast.error("Erro ao cadastrar agendamento!")
         }
     }
 
-    async function finishCut(schedule_id: string) {
+    async function finishCut({ id, status }: FinishCutProps) {
         try {
             const apiClient = setupAPIClient();
             await apiClient.delete('/schedule', {
                 params: {
-                    schedule_id
+                    schedule_id: id,
+                    status,
                 }
             })
             Router.push('/schedule')
-            toast.success("Serviço finalizado!")
+            if (status === "finish") {
+                toast.success("Serviço finalizado!")
+            } else {
+                toast.success("Serviço excluído!")
+            }
         } catch (error) {
             console.log(error);
             toast.error("Erro ao finalizar corte!")

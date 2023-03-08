@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import {
     IconButton,
     Box,
@@ -19,8 +19,10 @@ import {
     FiScissors,
     FiClipboard,
     FiSettings,
-    FiMenu
+    FiMenu,
+    FiUsers
 } from 'react-icons/fi'
+import { HiChartBar } from "react-icons/hi";
 import { IconType } from 'react-icons'
 
 import Link from 'next/link'
@@ -32,8 +34,10 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'Agenda', icon: FiScissors, route: '/schedule' },
-    { name: 'Cortes', icon: FiClipboard, route: '/haircuts' },
+    { name: 'Agenda', icon: FiClipboard, route: '/schedule' },
+    { name: 'Cortes', icon: FiScissors, route: '/haircuts' },
+    { name: 'Barbeiros', icon: FiUsers, route: '/barbers' },
+    // { name: 'Dashboard', icon: HiChartBar, route: '/dashboard' },
     { name: 'Minha Conta', icon: FiSettings, route: '/profile' },
 ]
 

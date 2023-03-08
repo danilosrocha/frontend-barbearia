@@ -19,7 +19,7 @@ export default function Register() {
   const [typePassword, setTypePassword] = useState("password")
 
   async function handleRegister() {
-    if (!name && !email && !password) {
+    if (!name || !email || !password) {
       toast.warning("Preencha todos os campos!")
       return
     }
