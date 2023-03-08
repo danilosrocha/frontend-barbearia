@@ -1,3 +1,4 @@
+import { validatedDate } from '@/utils/validatedDate';
 import {
     Modal,
     ModalOverlay,
@@ -20,8 +21,9 @@ interface ModalInfoProps {
 }
 
 export function ModalCalendary({ isOpen, onOpen, onClose, date, setDate, setDateSelected }: ModalInfoProps) {
-    function handleChange(date: Date) {
-        setDateSelected(`${date?.getDate()}/${date?.getMonth() + 1}`)
+    async function handleChange(date: Date) {
+        const newDate = await validatedDate(`${date?.getDate()}/${date?.getMonth() + 1}`)
+        setDateSelected(newDate)
         onClose()
     }
     return (

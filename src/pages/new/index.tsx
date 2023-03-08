@@ -82,11 +82,10 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   function handleChangeSelectBarber(id: string) {
     const barber = barbers?.find(item => item.id === id)
     setBarberSelected(barber)
-    console.log(barberSelected);
   }
 
   function handleChangeSelectTime(id: string) {
-    const time = barber?.available_at?.find(item => item === id)
+    const time = barberSelected?.available_at?.find(item => item === id)
     setTimeSelected(time)
   }
 

@@ -3,16 +3,11 @@ import { Sidebar } from "@/components/sidebar";
 import Head from "next/head";
 import Link from "next/link";
 import { FiChevronLeft } from 'react-icons/fi'
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { canSSRAuth } from "@/utils/canSSRAuth";
 import { toast } from "react-toastify";
 import { BarberContext } from "@/contexts/BarberContext";
 import { parseTimeString } from "@/utils/validatedTime";
-
-interface NewHaircutProps {
-  subscriptions: string,
-  count: number
-}
 
 export default function NewBarber() {
   const { registerBarber } = useContext(BarberContext)
@@ -20,7 +15,6 @@ export default function NewBarber() {
   const [startWork, setStartWork] = useState("07:00")
   const [endWork, setEndWork] = useState("20:00")
   const [workTime, setWorkTime] = useState("40")
-  const [avaliableTimes, setAvaliableTimes] = useState([])
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
@@ -31,7 +25,8 @@ export default function NewBarber() {
       return
     }
     setLoader(true)
-    await registerBarber({ barber_name: name, available_at: avaliableTimes })
+    const response = await handleValidatedTime()
+    await registerBarber({ barber_name: name, available_at: response })
     setLoader(false)
   }
 
@@ -40,17 +35,8 @@ export default function NewBarber() {
   }
 
   async function handleValidatedTime() {
-    parseTimeString(startWork, endWork, Number(workTime)).then(value => {
-      setAvaliableTimes(value)
-    }).catch(err => {
-      toast.error("Informe no formato correto!")
-    })
+    return parseTimeString(startWork, endWork, Number(workTime))
   }
-
-  useEffect(() => {
-    handleValidatedTime()
-  }, [startWork, endWork, workTime])
-
 
   return (
     <>
@@ -93,25 +79,25 @@ export default function NewBarber() {
                 />
               </Flex>
 
-              <Flex justify="space-between" w="85%" gap={4} align="center" mb={3}>
+              <Flex justify="space-between" w="85%" gap={4} direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} mb={3}>
 
-                <Flex direction="column" w="85%">
+                <Flex direction="column" w="100%">
                   <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Horário de entrada</Text>
-                  <Input color="white" placeholder="Exemplo: 7:00" w="85%" bg="gray.900" type="text" size="lg" mb={3}
+                  <Input color="white" placeholder="Exemplo: 7:00" w="100%" bg="gray.900" type="text" size="lg" mb={3}
                     value={startWork}
                     onChange={(e) => setStartWork(e.target.value)}
                   />
 
                   <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Horário de saída</Text>
-                  <Input color="white" placeholder="Exemplo: 20:00" w="85%" bg="gray.900" type="text" size="lg" mb={3}
+                  <Input color="white" placeholder="Exemplo: 20:00" w="100%" bg="gray.900" type="text" size="lg"
                     value={endWork}
                     onChange={(e) => setEndWork(e.target.value)}
                   />
                 </Flex>
 
-                <Flex direction="column" w="85%">
+                <Flex direction="column" w="100%">
                   <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Tempo por atendimento - Minutos</Text>
-                  <Input color="white" placeholder="Exemplo: 40" w="100%" bg="gray.900" type="number" size="lg" mb={3}
+                  <Input color="white" placeholder="Exemplo: 40" w="100%" bg="gray.900" type="number" size="lg"
                     value={workTime}
                     onChange={(e) => setWorkTime(e.target.value)}
                   />
@@ -120,7 +106,7 @@ export default function NewBarber() {
               </Flex>
 
               <Button
-                isLoading={loader} onClick={handleRegisterBarber} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
+                isLoading={loader} onClick={handleRegisterBarber} w="85%" mb={6} mt={3} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
               >
                 Cadastrar
               </Button>
