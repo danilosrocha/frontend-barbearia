@@ -8,8 +8,8 @@ import { setupAPIClient } from "@/services/api";
 import { ModalCalendary } from "@/components/modalCalendary";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { BarberContext } from "@/contexts/BarberContext";
-import { configUser } from "@/services/config";
 import { canSSRGuestFast } from "@/utils/canSSRGuestFast";
+import { setConfigUserFromEnv } from "@/utils/isClient";
 
 interface HaircutsItem {
   id: string
@@ -47,17 +47,14 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
   const [date, setDate] = useState<Date>();
 
   async function handleIdUserBarber() {
+
     const apiClient = setupAPIClient()
     const response = await apiClient.get('/user/check',
       {
         params: {
-          nameBarber: configUser
+          nameBarber: setConfigUserFromEnv()
         }
       })
-
-    console.log(response);
-
-
     setUserId(response.data?.id)
   }
 
