@@ -53,7 +53,7 @@ export const AuthContext = createContext({} as AuthContextData)
 export function signOut() {
     try {
         destroyCookie(null, '@barber.token', { path: '/' })
-        Router.push('/login')
+        Router.push('/')
 
     } catch (error) {
         toast.error("Error ao sair!")

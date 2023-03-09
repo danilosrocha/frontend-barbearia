@@ -232,7 +232,7 @@ export const getServerSideProps = canSSRGuestFast(async (ctx) => {
     console.log(error);
     return {
       redirect: {
-        destination: '/fast',
+        destination: '/',
         permanent: false
       }
     }
