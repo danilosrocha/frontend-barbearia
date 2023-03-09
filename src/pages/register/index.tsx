@@ -13,6 +13,7 @@ export default function Register() {
   const { signUp } = useContext(AuthContext)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [code, setCode] = useState('')
   const [password, setPassword] = useState('')
   const [loader, setLoader] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +26,7 @@ export default function Register() {
     }
 
     setLoader(true)
-    await signUp({ name, email, password })
+    await signUp({ name, email, password, code })
     setLoader(false)
   }
 
@@ -75,7 +76,20 @@ export default function Register() {
             color="white"
             variant="filled"
             size="lg"
-            placeholder="Digite o seu email"
+            placeholder="Digite o código"
+            type="email"
+            mb={3}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+
+          <Input
+            background="barber.400"
+            _hover={{ bg: "#030303" }}
+            color="white"
+            variant="filled"
+            size="lg"
+            placeholder="Digite seu email"
             type="email"
             mb={3}
             value={email}

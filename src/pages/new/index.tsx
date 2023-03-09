@@ -48,21 +48,10 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   const [timeSelected, setTimeSelected] = useState<string>()
   const [date, setDate] = useState<Date>();
   const [dateSelected, setDateSelected] = useState<string>(currentDay);
-  const [barber, setBarber] = useState<BarbersItem>()
   const [isMobile] = useMediaQuery("(max-width: 800px)")
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  async function barberAvaliableTime() {
-    const apiClient = setupAPIClient()
-    const response = await apiClient.get('/barber',
-      {
-        params: {
-          barber_id: barberSelected[0]
-        }
-      })
 
-    setBarber(response.data)
-  }
 
   async function handleRegister() {
     if (!customer) {
@@ -99,7 +88,6 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   }
 
   useEffect(() => {
-    barberAvaliableTime()
 
     if (barberSelected && dateSelected) {
       getTimeAvaliable({ barber_id: barberSelected?.id, date: dateSelected }).then((value) => {

@@ -9,6 +9,7 @@ interface BarberContextData {
     updateDataBarber: (credential: UpdateBarberProps) => Promise<void>
     deleteBarber: (credential: string) => Promise<void>
     getTimeAvaliable: (credential: GetTimeAvaliableProps) => Promise<GetAvalibleTimesProps>
+    getTimeAvaliableFast: (credential: GetTimeAvaliableProps) => Promise<GetAvalibleTimesProps>
 }
 
 interface BarbersItem {
@@ -85,6 +86,21 @@ export function BarberProvider({ children }: BarberProviderProps) {
             console.log(err);
         }
     }
+    async function getTimeAvaliableFast({ barber_id, date }: GetTimeAvaliableProps) {
+        try {
+            const apiClient = setupAPIClient();
+            const response = await apiClient.get('/barber/times/fast', {
+                params: {
+                    barber_id,
+                    date
+                }
+            })
+
+            return response.data
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     async function listBarbers(status: string) {
 
@@ -135,7 +151,7 @@ export function BarberProvider({ children }: BarberProviderProps) {
     }
 
     return (
-        <BarberContext.Provider value={{ registerBarber, updateDataBarber, deleteBarber, listBarbers, getTimeAvaliable }}>
+        <BarberContext.Provider value={{ registerBarber, updateDataBarber, deleteBarber, listBarbers, getTimeAvaliable, getTimeAvaliableFast }}>
             {children}
         </BarberContext.Provider>
     )

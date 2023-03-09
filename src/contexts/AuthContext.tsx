@@ -40,6 +40,7 @@ interface SignUpProps {
     name: string
     email: string
     password: string
+    code: string
 }
 
 interface UserUpdateProps {
@@ -113,12 +114,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
-    async function signUp({ email, name, password }: SignUpProps) {
+    async function signUp({ email, name, password, code }: SignUpProps) {
         try {
             await api.post('/users', {
                 name,
                 email,
-                password
+                password,
+                code
             })
 
             toast.success("Cadastrado com sucesso!")

@@ -9,6 +9,7 @@ interface HaircutContextData {
     listHaircuts: (credential: string) => Promise<HaircutsItem[]>
     updateHaircut: (credential: UpdateHaircutProps) => Promise<void>
     registerNewCut: (credential: RegisteNewCutProps) => Promise<void>
+    registerNewCutFast: (credential: RegisteScheduleProps) => Promise<void>
     finishCut: (credential: FinishCutProps) => Promise<void>
 }
 
@@ -42,6 +43,15 @@ interface RegisteNewCutProps {
     barber_id: string
     time: string
     date: string
+
+}
+interface RegisteScheduleProps {
+    customer: string
+    haircut_id: string
+    barber_id: string
+    time: string
+    date: string
+    user_id: string
 }
 
 interface FinishCutProps {
@@ -126,6 +136,28 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
             toast.error("Erro ao cadastrar agendamento!")
         }
     }
+    async function registerNewCutFast({ customer, haircut_id, barber_id, date, time, user_id }: RegisteScheduleProps) {
+        try {
+            console.log({ customer, haircut_id, barber_id, date, time, user_id });
+
+            const apiClient = setupAPIClient();
+            await apiClient.post('/schedule/fast', {
+                customer,
+                haircut_id,
+                barber_id,
+                date,
+                time,
+                user_id,
+            })
+            toast.success("Agendamento realizado com sucesso!")
+        } catch (error) {
+            if (error.response.data.error === "Error: Schedule already exists!") {
+                toast.warning("Este horário já possui um cliente agendado!")
+                return
+            }
+            toast.error("Erro ao cadastrar agendamento!")
+        }
+    }
 
     async function finishCut({ id, status }: FinishCutProps) {
         try {
@@ -150,7 +182,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
 
 
     return (
-        <HaircutContext.Provider value={{ registerHaircut, listHaircuts, updateHaircut, registerNewCut, finishCut }}>
+        <HaircutContext.Provider value={{ registerHaircut, listHaircuts, updateHaircut, registerNewCut, finishCut, registerNewCutFast }}>
             {children}
         </HaircutContext.Provider>
     )
