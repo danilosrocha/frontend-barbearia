@@ -9,7 +9,7 @@ import { canSSRGuest } from "@/utils/canSSRGuest";
 export default function Home() {
 
   setTimeout(() => {
-    Router.push('/login')
+    Router.push('/fast')
   }, 1500);
 
   return (
