@@ -10,13 +10,14 @@ interface OccupiedTime {
     minute: Number
 }
 
-export default function SelectTime({ availableTime, timeUsed, initialAvailableTime, timesAlreadyUsed, setTimeToUsed}) {
+export default function SelectTime({ availableTime, timeUsed, initialAvailableTime, timesAlreadyUsed, setTimeToUsed }) {
     const [value, setValue] = useState(moment('10:00', 'HH:mm'));
     const [occupiedTimes, setOccupiedTimes] = useState<OccupiedTime[]>();
     const [enableMinute, setEnableMinute] = useState(false);
     const [cutSchedule, setCutSchedule] = useState<OccupiedTime[]>();
     const [newAvailableTimes, setNewAvailableTimes] = useState<OccupiedTime[]>();
     const [freeTime, setFreeTime] = useState<boolean>();
+    const [timesAlreadyUse, setTimesAlreadyUse] = useState<OccupiedTime[]>(timesAlreadyUsed);
 
     function handleConfirmTime() {
         for (let i = 0; i < cutSchedule.length; i++) {
@@ -25,6 +26,8 @@ export default function SelectTime({ availableTime, timeUsed, initialAvailableTi
             if (index === -1) {
                 toast.warning("Seu corte requer mais tempo, há um cliente agendado no próximo horário..")
                 setFreeTime(false);
+                const concatenatedArray = [...timesAlreadyUsed, ...cutSchedule];
+                setTimesAlreadyUse(concatenatedArray)
                 return false
 
             }
@@ -32,7 +35,11 @@ export default function SelectTime({ availableTime, timeUsed, initialAvailableTi
         toast.success("Horário disponível! Confirme o agendamento")
         setFreeTime(true);
         setTimeToUsed(returnModelTime(cutSchedule))
-        
+
+        const concatenatedArray = [...timesAlreadyUsed, ...cutSchedule];
+
+        setTimesAlreadyUse(concatenatedArray)
+
         return true
     }
 
@@ -62,11 +69,10 @@ export default function SelectTime({ availableTime, timeUsed, initialAvailableTi
 
 
     const disabledMinutes = (selectedHour) => {
-
         const minutes = [];
-        for (let i = 0; i < timesAlreadyUsed.length; i++) {
-            if (selectedHour === timesAlreadyUsed[i].hour) {
-                minutes.push(timesAlreadyUsed[i].minute);
+        for (let i = 0; i < timesAlreadyUse.length; i++) {
+            if (selectedHour === timesAlreadyUse[i].hour) {
+                minutes.push(timesAlreadyUse[i].minute);
             }
         }
         return minutes;
@@ -107,7 +113,7 @@ export default function SelectTime({ availableTime, timeUsed, initialAvailableTi
                     onClick={handleConfirmTime}
                     _hover={{
                         bg: freeTime ? "green.300" : (freeTime !== undefined ? "red.300" : "yellow.300")
-                      }}
+                    }}
                 >
                     OK
                 </Button>}

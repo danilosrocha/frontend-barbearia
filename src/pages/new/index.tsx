@@ -48,7 +48,6 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   const [initialAvailableTime, setInitialAvailableTime] = useState<string[]>()
   const [timesUsed, setTimesUsed] = useState<string[]>()
   const [timeToUsed, setTimeToUsed] = useState<string[]>()
-  const [timeSelected, setTimeSelected] = useState<string>()
   const [date, setDate] = useState<Date>();
   const [dateSelected, setDateSelected] = useState<string>();
   const [isMobile] = useMediaQuery("(max-width: 800px)")
@@ -65,7 +64,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
     }
 
     setLoader(true)
-    await registerNewCut({ customer, haircut_id: haircutSelected?.id, barber_id: barberSelected?.id, time: timeSelected, date: dateSelected })
+    await registerNewCut({ customer, haircut_id: haircutSelected?.id, barber_id: barberSelected?.id, time: timeToUsed[0], date: dateSelected, time_occuped: timeToUsed })
     setLoader(false)
   }
 
@@ -83,10 +82,6 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
     setBarberSelected(barber)
   }
 
-  function handleChangeSelectTime(id: string) {
-    const time = barberSelected?.available_at?.find(item => item === id)
-    setTimeSelected(time)
-  }
 
   function handleClickItem() {
     onOpen()
@@ -169,7 +164,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
               <Flex align='end' justify='center' w="85%" mb={3} mt={3}>
                 {!availableTime ?
                   <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff'>
-                    {!date ? "Escolha o dia" :  `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
+                    {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
                     <ModalCalendary
                       isOpen={isOpen}
                       onClose={onClose}
@@ -182,7 +177,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                   <Flex direction='column' w='100%'>
                     <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
                     <Flex direction="row" align='center' justify='space-between' >
-                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed}/>
+                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
                       <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
                         {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
                           `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
@@ -204,7 +199,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
               <Button
                 isDisabled={!timeToUsed} isLoading={loader} onClick={handleRegister} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
               >
-                Cadastrar
+                Agendar
               </Button>
 
             </Flex>

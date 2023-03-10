@@ -9,7 +9,7 @@ interface BarberContextData {
     updateDataBarber: (credential: UpdateBarberProps) => Promise<void>
     deleteBarber: (credential: string) => Promise<void>
     getTimeAvaliable: (credential: GetTimeAvaliableProps) => Promise<string[]>
-    getTimeAvaliableFast: (credential: GetTimeAvaliableProps) => Promise<GetAvalibleTimesProps>
+    getTimeAvaliableFast: (credential: GetTimeAvaliableProps) => Promise<string[]>
 }
 
 interface BarbersItem {
@@ -33,11 +33,6 @@ interface UpdateBarberProps {
     barber_id: string
     barber_name: string
 }
-
-interface GetAvalibleTimesProps {
-
-}
-
 
 interface GetTimeAvaliableProps {
     barber_id: string

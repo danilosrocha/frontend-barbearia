@@ -45,7 +45,7 @@ interface RegisteNewCutProps {
     barber_id: string
     time: string
     date: string
-
+    time_occuped: string[]
 }
 interface RegisteScheduleProps {
     customer: string
@@ -54,6 +54,7 @@ interface RegisteScheduleProps {
     time: string
     date: string
     user_id: string
+    time_occuped:  string[]
 }
 
 interface FinishCutProps {
@@ -122,7 +123,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
         }
     }
 
-    async function registerNewCut({ customer, haircut_id, barber_id, date, time }: RegisteNewCutProps) {
+    async function registerNewCut({ customer, haircut_id, barber_id, date, time, time_occuped }: RegisteNewCutProps) {
         try {
             const apiClient = setupAPIClient();
             await apiClient.post('/schedule', {
@@ -130,7 +131,8 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
                 haircut_id,
                 barber_id,
                 date,
-                time
+                time,
+                time_occuped
             })
             Router.push('/schedule')
             toast.success("Agendamento realizado com sucesso!")
@@ -142,7 +144,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
             toast.error("Erro ao cadastrar agendamento!")
         }
     }
-    async function registerNewCutFast({ customer, haircut_id, barber_id, date, time, user_id }: RegisteScheduleProps) {
+    async function registerNewCutFast({ customer, haircut_id, barber_id, date, time, user_id, time_occuped }: RegisteScheduleProps) {
         try {
             console.log({ customer, haircut_id, barber_id, date, time, user_id });
 
@@ -154,6 +156,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
                 date,
                 time,
                 user_id,
+                time_occuped,
             })
             toast.success("Agendamento realizado com sucesso!")
         } catch (error) {

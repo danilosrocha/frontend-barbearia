@@ -11,6 +11,7 @@ import { BarberContext } from "@/contexts/BarberContext";
 import { canSSRGuestFast } from "@/utils/canSSRGuestFast";
 import { setConfigUserFromEnv } from "@/utils/isClient";
 import SelectTime from "@/components/timerPicker";
+import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
 
 interface HaircutsItem {
   id: string
@@ -18,6 +19,7 @@ interface HaircutsItem {
   price: number | string
   status: boolean
   user_id: string
+  time: string
 }
 interface BarbersItem {
   id: string
@@ -45,7 +47,14 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [dateSelected, setDateSelected] = useState<string>();
   const [date, setDate] = useState<Date>();
+  const [initialAvailableTime, setInitialAvailableTime] = useState<string[]>()
+  const [timesUsed, setTimesUsed] = useState<string[]>()
+  const [haircutSelected, setHaircutSelected] = useState(haircuts[0])
+  const [timeToUsed, setTimeToUsed] = useState<string[]>()
   const [isMobile] = useMediaQuery("(max-width: 750px)")
+  const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
+
+  const timeUsed = Number(haircutSelected?.time) + 10
 
   async function handleIdUserBarber() {
 
@@ -70,9 +79,10 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
       customer: name,
       haircut_id: haircuts[0]?.id,
       barber_id: barberSelected?.id,
-      time: timeSelected,
+      time: timeToUsed[0],
       date: dateSelected,
-      user_id
+      user_id,
+      time_occuped: timeToUsed
     })
     setLoader(false)
     setName("")
@@ -81,26 +91,27 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
   async function handleChangeSelectBarber(id: string) {
     const barber = barbers?.find(item => item.id === id)
     setBarberSelected(barber)
+    
   }
 
-  function handleChangeSelectTime(id: string) {
-    const time = barberSelected?.available_at?.find(item => item === id)
-    setTimeSelected(time)
-  }
 
   function handleClickItem() {
     onOpen()
+  }
+
+  function handleChangeSelect(id: string) {
+    const haircutItem = haircuts?.find(item => item.id === id)
+    setHaircutSelected(haircutItem)
   }
 
   useEffect(() => {
     handleIdUserBarber()
     if (barberSelected && dateSelected) {
       getTimeAvaliableFast({ barber_id: barberSelected?.id, date: dateSelected }).then((value) => {
-        const result = barberSelected?.available_at.filter(item => !value?.services?.times.includes(item));
+        const result = barberSelected?.available_at.filter(item => !value.includes(item));
         setAvailableTime(result)
-        if (!timeSelected) {
-          setTimeSelected(result[0])
-        }
+        setTimesUsed(value)
+        setInitialAvailableTime(barberSelected?.available_at)
       });
     }
 
@@ -162,37 +173,48 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
               </Select>
             </Flex>
 
-            <Flex align='end' justify='center'  mb={3} mt={3}>
-              {!availableTime ?
-                <Button onClick={handleClickItem} w="100%" h="45px">
-                  {!date ? "Escolha o dia" : `Corte dia: ${date?.getDate()}/${date?.getMonth() + 1}`}
-                  <ModalCalendary
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    onOpen={onOpen}
-                    setDate={setDate}
-                    date={date}
-                    setDateSelected={setDateSelected}
-                  />
-                </Button> :
-                <Flex direction='column' w='100%' >
-                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
-                  <Flex direction="row" align='center' justify='space-between' >
-                    <SelectTime availableTime={availableTime} />
-                    <Button onClick={handleClickItem} h="40px" w={isMobile ? "50%" : "60%"} p={1}>
-                      {!date ? "Escolha o dia" : `Corte dia: ${date?.getDate()}/${date?.getMonth() + 1}`}
-                      <ModalCalendary
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        onOpen={onOpen}
-                        setDate={setDate}
-                        date={date}
-                        setDateSelected={setDateSelected}
-                      />
-                    </Button>
+            <Flex direction="column" w="100%">
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Selecione o corte:</Text>
+                <Select color="white" w="100%" bg="gray.900" size="lg" mb={4} onChange={(e) => handleChangeSelect(e.target.value)}>
+                  {haircuts?.map(item => (
+                    <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
+                  ))}
+                </Select>
+              </Flex>
+
+
+              <Flex align='end' justify='center' w="100%" mb={3} mt={3}>
+                {!availableTime ?
+                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff'>
+                    {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
+                    <ModalCalendary
+                      isOpen={isOpen}
+                      onClose={onClose}
+                      onOpen={onOpen}
+                      setDate={setDate}
+                      date={date}
+                      setDateSelected={setDateSelected}
+                    />
+                  </Button> :
+                  <Flex direction='column' w='100%'>
+                    <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
+                    <Flex direction="row" align='center' justify='space-between' >
+                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
+                      <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
+                        {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
+                          `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
+                        <ModalCalendary
+                          isOpen={isOpen}
+                          onClose={onClose}
+                          onOpen={onOpen}
+                          setDate={setDate}
+                          date={date}
+                          setDateSelected={setDateSelected}
+                        />
+                      </Button>
+                    </Flex>
                   </Flex>
-                </Flex>
-              }
+                }
 
 
             </Flex>
@@ -205,7 +227,7 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
               size="lg"
               _hover={{ bg: "#ffb13e" }}
               isLoading={loader}
-              isDisabled={!timeSelected}
+              isDisabled={!timeToUsed}
               onClick={handleRegister}
             >
               Agendar
