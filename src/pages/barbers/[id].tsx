@@ -79,7 +79,7 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
                 <title>Editar dados barbeiro - Rocha's Client Barber</title>
             </Head>
             <Sidebar>
-                <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+                <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
                     <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" >
 
@@ -96,7 +96,7 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
                                     </Button>
                                 </Link>
 
-                                <Heading fontSize="3xl" ml={4} color="orange.900">Dados do Barbeiro</Heading>
+                                <Heading fontSize="3xl" ml={4} color="orange.900">Dados do barbeiro</Heading>
 
                             </Flex>
 
@@ -106,13 +106,13 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
 
                             <Heading mb={4} fontSize="2xl" ml={4} color="white" >Editar dados</Heading>
 
-                            <Input color="white" placeholder="Nome" w="85%" bg="gray.900" type="text" size="lg" mb={3}
+                            <Input color="white" placeholder="Nome" w="85%" bg="gray.900" type="text" size="lg" mb={6}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
 
                             <Button
-                                isLoading={loader} onClick={handleUpdateDataBarber} w="85%" mb={4} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
+                                isLoading={loader} onClick={handleUpdateDataBarber} w="85%" mb={3} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
                             >
                                 Editar
                             </Button>

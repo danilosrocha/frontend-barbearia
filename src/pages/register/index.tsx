@@ -45,7 +45,7 @@ export default function Register() {
         <title>Rocha's Client Barber - Faça seu cadastro</title>
       </Head>
 
-      <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="center">
+      <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="center">
         <Flex width={640} direction="column" p={14} rounded={8}>
           <Center p={4} mb={3}>
             <Image

@@ -10,6 +10,7 @@ import { HaircutContext } from "@/contexts/HaircutContext";
 import { BarberContext } from "@/contexts/BarberContext";
 import { canSSRGuestFast } from "@/utils/canSSRGuestFast";
 import { setConfigUserFromEnv } from "@/utils/isClient";
+import SelectTime from "@/components/timerPicker";
 
 interface HaircutsItem {
   id: string
@@ -38,13 +39,13 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
   const [name, setName] = useState('')
   const [loader, setLoader] = useState(false)
   const [barberSelected, setBarberSelected] = useState(barbers[0])
-  const [isMobile] = useMediaQuery("(max-width: 750px)")
   const [timeSelected, setTimeSelected] = useState<string>()
   const [user_id, setUserId] = useState<string>()
   const [availableTime, setAvailableTime] = useState<string[]>()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [dateSelected, setDateSelected] = useState<string>();
   const [date, setDate] = useState<Date>();
+  const [isMobile] = useMediaQuery("(max-width: 750px)")
 
   async function handleIdUserBarber() {
 
@@ -152,7 +153,7 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
 
             <Flex direction="column" w="100%">
               <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
-              <Select color="white" w="100%" bg="gray.900" size="lg" mb={5} onChange={(e) => handleChangeSelectBarber(e.target.value)}>
+              <Select color="white" w="100%" bg="gray.900" size="lg" mb={4} onChange={(e) => handleChangeSelectBarber(e.target.value)}>
                 {barbers?.map(item => {
                   return (
                     <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
@@ -161,34 +162,46 @@ export default function FastSchedule({ barbers, haircuts }: HaircutsProps) {
               </Select>
             </Flex>
 
-            <Button onClick={handleClickItem} w="100%">
-              {!date ? "Escolha o dia" : `Corte dia: ${date?.getDate()}/${date?.getMonth() + 1}`}
-              <ModalCalendary
-                isOpen={isOpen}
-                onClose={onClose}
-                onOpen={onOpen}
-                setDate={setDate}
-                date={date}
-                setDateSelected={setDateSelected}
-              />
-            </Button>
+            <Flex align='end' justify='center'  mb={3} mt={3}>
+              {!availableTime ?
+                <Button onClick={handleClickItem} w="100%" h="45px">
+                  {!date ? "Escolha o dia" : `Corte dia: ${date?.getDate()}/${date?.getMonth() + 1}`}
+                  <ModalCalendary
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    onOpen={onOpen}
+                    setDate={setDate}
+                    date={date}
+                    setDateSelected={setDateSelected}
+                  />
+                </Button> :
+                <Flex direction='column' w='100%' >
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
+                  <Flex direction="row" align='center' justify='space-between' >
+                    <SelectTime availableTime={availableTime} />
+                    <Button onClick={handleClickItem} h="40px" w={isMobile ? "50%" : "60%"} p={1}>
+                      {!date ? "Escolha o dia" : `Corte dia: ${date?.getDate()}/${date?.getMonth() + 1}`}
+                      <ModalCalendary
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        onOpen={onOpen}
+                        setDate={setDate}
+                        date={date}
+                        setDateSelected={setDateSelected}
+                      />
+                    </Button>
+                  </Flex>
+                </Flex>
+              }
 
-            {availableTime &&
-              <Flex direction="column" w="100%" mt={3} justify="space-between" >
-                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
-                <Select color="white" w="100%" bg="gray.900" size="lg" onChange={(e) => handleChangeSelectTime(e.target.value)}>
-                  {availableTime && availableTime.map(item => (
-                    <option style={{ background: "#1b1c29" }} key={item} value={item}>{item}</option>
-                  ))}
-                </Select>
-              </Flex>
-            }
+
+            </Flex>
 
             <Button
               background="button.cta"
-              mt={5}
               mb={6}
               color="gray.900"
+              h="45px"
               size="lg"
               _hover={{ bg: "#ffb13e" }}
               isLoading={loader}

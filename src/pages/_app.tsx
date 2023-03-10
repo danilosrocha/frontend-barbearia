@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { HaircutProvider } from '@/contexts/HaircutContext';
 import { BarberProvider } from '@/contexts/BarberContext';
 import 'react-calendar/dist/Calendar.css';
+import 'rc-time-picker/assets/index.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import './App.css';
 
 const colors = {

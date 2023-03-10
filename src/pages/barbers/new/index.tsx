@@ -14,7 +14,7 @@ export default function NewBarber() {
   const [name, setName] = useState("")
   const [startWork, setStartWork] = useState("07:00")
   const [endWork, setEndWork] = useState("20:00")
-  const [workTime, setWorkTime] = useState("40")
+  const [workTime, setWorkTime] = useState("10")
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
@@ -44,7 +44,7 @@ export default function NewBarber() {
         <title>Cadastrar barbeiro - Rocha's Client Barber</title>
       </Head>
       <Sidebar>
-        <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+        <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
           <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" >
 
@@ -92,14 +92,6 @@ export default function NewBarber() {
                   <Input color="white" placeholder="Exemplo: 20:00" w="100%" bg="gray.900" type="text" size="lg"
                     value={endWork}
                     onChange={(e) => setEndWork(e.target.value)}
-                  />
-                </Flex>
-
-                <Flex direction="column" w="100%">
-                  <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Tempo por atendimento - Minutos</Text>
-                  <Input color="white" placeholder="Exemplo: 40" w="100%" bg="gray.900" type="number" size="lg"
-                    value={workTime}
-                    onChange={(e) => setWorkTime(e.target.value)}
                   />
                 </Flex>
 

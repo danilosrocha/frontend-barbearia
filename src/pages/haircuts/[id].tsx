@@ -9,6 +9,8 @@ import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { toast } from "react-toastify";
 import { validatedValueHaircut } from "@/utils/validatedValueHaircut";
+import { parseOneTimeString } from "@/utils/validatedTime";
+
 
 export interface DetailProps {
     id: string
@@ -16,6 +18,7 @@ export interface DetailProps {
     price: number | string
     status: boolean
     user_id: string
+    time: string
 }
 
 interface HaircutProps {
@@ -28,11 +31,12 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
     const [name, setName] = useState(haircutDetail?.name || "")
     const [price, setPrice] = useState(haircutDetail?.price || "")
     const [haircut_id, setHaircut_id] = useState(haircutDetail?.id || "")
+    const [time, setTime] = useState(haircutDetail?.time || "")
     const [loader, setLoader] = useState(false)
     const [isMobile] = useMediaQuery("(max-width: 800px)")
     const [isLoading, setIsLoading] = useState(false)
     const [disableHaircut, setDisableHaircut] = useState(haircutDetail?.status === true ? "enabled" : "disabled")
-
+    const precoFormatado = parseFloat(String(price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     async function handleUpdateHaircut() {
         if (!name || !price) {
             toast.warning("Preencha todos os campos!")
@@ -40,9 +44,10 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
         }
 
         const newPrice = (validatedValueHaircut(price))
+        const newTime = (parseOneTimeString(time))
 
         setLoader(true)
-        await updateHaircut({ name, haircut_id, status: disableHaircut, price: newPrice })
+        await updateHaircut({ name, haircut_id, status: disableHaircut, price: newPrice, time: newTime })
         setLoader(false)
     }
 
@@ -64,7 +69,7 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
                 <title>Editar corte - Rocha's Client Barber</title>
             </Head>
             <Sidebar>
-                <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+                <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
                     <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" >
 
@@ -91,14 +96,19 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
 
                             <Heading mb={4} fontSize="2xl" ml={4} color="white" >Editar corte</Heading>
 
-                            <Input color="white" placeholder="Nome do corte" w="85%" bg="gray.900" type="text" size="lg" mb={3}
-                                value={name}
+                            <Input color="white" placeholder={name} w="85%" bg="gray.900" type="text" size="lg" mb={3}
+
                                 onChange={(e) => setName(e.target.value)}
                             />
 
-                            <Input color="white" placeholder="Valor do corte ex: 59.90" w="85%" bg="gray.900" type="text" size="lg" mb={4}
-                                value={price}
+                            <Input color="white" placeholder={precoFormatado} w="85%" bg="gray.900" type="text" size="lg" mb={4}
+
                                 onChange={(e) => setPrice(e.target.value)}
+                            />
+
+                            <Input color="white" placeholder={`${time} min`} w="85%" bg="gray.900" type="text" size="lg" mb={4}
+
+                                onChange={(e) => setTime(e.target.value)}
                             />
 
                             <Flex w="85%">

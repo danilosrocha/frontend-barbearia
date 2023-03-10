@@ -46,7 +46,7 @@ export default function Profile({ user, premium }: ProfileProps) {
         <title>Minha Conta - Rocha's Client Barber</title>
       </Head>
       <Sidebar>
-        <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+        <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
           <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column">
 
@@ -57,7 +57,7 @@ export default function Profile({ user, premium }: ProfileProps) {
             <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" alignItems="center" justifyContent="center" bg="barber.400" gap={5} rounded={4}>
 
               <Flex direction="column" w="85%" >
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Nome da barbearia:</Text>
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Nome da barbearia:</Text>
                 <Input color="white" placeholder="Nome da Barbearia" w="100%" bg="gray.900" type="text" size="lg"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -65,7 +65,7 @@ export default function Profile({ user, premium }: ProfileProps) {
               </Flex>
 
               <Flex direction="column" w="85%" >
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Endereço:</Text>
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Endereço:</Text>
                 <Input color="white" placeholder="Endereço da barbearia" w="100%" bg="gray.900" type="text" size="lg"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
@@ -90,12 +90,12 @@ export default function Profile({ user, premium }: ProfileProps) {
 
               <Flex direction="column" w="85%">
                 <Button
-                  isLoading={loader} onClick={handleUpdateUser} w="100%" mt={3} mb={4} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
+                  isLoading={loader} onClick={handleUpdateUser} w="100%" mt={3} mb={3} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
                 >
                   Salvar
                 </Button>
                 <Button
-                  onClick={handleLogout} w="100%" mt={3} mb={4} bg="red.600" size="lg" _hover={{ bg: 'red.500' }}
+                  onClick={handleLogout} w="100%"  mb={4} bg="red.600" size="lg" _hover={{ bg: 'red.500' }}
                 >
                   Sair da conta
                 </Button>

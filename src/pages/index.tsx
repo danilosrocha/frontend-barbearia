@@ -39,7 +39,7 @@ export default function Preloader() {
       <Head>
         <title>Rocha's Client - Bigode Grosso</title>
       </Head>
-      <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="center">
+      <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="center">
         <Flex width={640} direction="column" p={14} rounded={8} alignItems="center" justifyContent="center">
 
           <Image

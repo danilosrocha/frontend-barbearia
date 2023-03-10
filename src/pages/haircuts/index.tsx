@@ -54,7 +54,7 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
         <title>Modelos de cortes - Rocha's Client Barber</title>
       </Head>
       <Sidebar>
-        <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+        <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
           <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column">
 
@@ -63,23 +63,37 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
               <Flex mb={isMobile ? "10px" : "0"} >
                 <Heading fontSize="3xl" mr={4} color="orange.900">Modelos de corte</Heading>
 
-                <Link href="/haircuts/new" onClick={handleRegisterCut}>
+                {!isMobile && <Link href="/haircuts/new" onClick={handleRegisterCut}>
                   <Button color="white" bg="barber.400" _hover={{ bg: "gray.900" }} isLoading={loader}>
                     Cadastrar novo
                   </Button>
-                </Link>
+                </Link>}
 
               </Flex>
 
-              <Stack alignItems="center" direction="row">
+              {isMobile ? <Flex justify='space-between' w='100%'>
+                <Stack alignItems="center" direction="row">
+                  <Text fontSize="2xs" fontWeight="bold" color="white">{disableHaircut === 'disabled' ? "DESATIVADOS" : "ATIVADOS"}</Text>
+                  <Switch colorScheme="green" size="lg" isChecked={disableHaircut === 'disabled' ? false : true} value={disableHaircut} onChange={(e: ChangeEvent<HTMLInputElement>) => handleDisable(e)} />
+                </Stack>
+
+
+                {isMobile && <Link href="/haircuts/new" onClick={handleRegisterCut}>
+                  <Button color="white" bg="barber.400" _hover={{ bg: "gray.900" }} isLoading={loader}>
+                    Cadastrar novo
+                  </Button>
+                </Link>}
+              </Flex> : <Stack alignItems="center" direction="row">
                 <Text fontSize="2xs" fontWeight="bold" color="white">{disableHaircut === 'disabled' ? "DESATIVADOS" : "ATIVADOS"}</Text>
                 <Switch colorScheme="green" size="lg" isChecked={disableHaircut === 'disabled' ? false : true} value={disableHaircut} onChange={(e: ChangeEvent<HTMLInputElement>) => handleDisable(e)} />
-              </Stack>
+              </Stack>}
+
+
             </Flex>
 
 
             {haircutList?.map(haircut => {
-              const priceFormat = Number(haircut.price).toFixed(2)
+              const priceFormat = parseFloat(String(haircut?.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
               const isItemLoading = loadingItemId === haircut.id;
               return (
                 <Link key={haircut.id} href={`/haircuts/${haircut.id}`} onClick={() => handleClickItem(haircut.id)} >
@@ -90,7 +104,7 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
                           <IoMdPricetag color="#fba931" size={28} />
                           <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{haircut.name}</Text>
                         </Flex>
-                        <Text color="white" fontWeight="bold">Preço: R$ {priceFormat}</Text>
+                        <Text color="white" fontWeight="bold">Preço: {priceFormat}</Text>
                       </>
                     )}
 

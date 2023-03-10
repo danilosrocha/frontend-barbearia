@@ -14,3 +14,9 @@ export function parseTimeString(startTime: string, endTime: string, workTime: nu
 
     return timeSlots;
 }
+
+export function parseOneTimeString(startTime: string) {
+    const result = startTime.split(" ")
+    return result[0]
+}
+

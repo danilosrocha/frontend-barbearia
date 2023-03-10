@@ -81,7 +81,7 @@ export default function Schedule({ schedule, days }: ScheduleProps) {
         <title>Modelos de cortes - Rocha's Client Barber</title>
       </Head>
       <Sidebar>
-        <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+        <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
           <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column">
 

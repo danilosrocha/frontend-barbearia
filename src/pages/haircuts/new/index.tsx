@@ -9,6 +9,8 @@ import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { toast } from "react-toastify";
 import { validatedValueHaircut } from "@/utils/validatedValueHaircut";
+import { parseOneTimeString } from "@/utils/validatedTime";
+
 
 interface NewHaircutProps {
   subscriptions: string,
@@ -19,6 +21,7 @@ export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
   const { registerHaircut } = useContext(HaircutContext)
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
+  const [time, setTime] = useState("")
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isMobile] = useMediaQuery("(max-width: 800px)")
@@ -30,9 +33,10 @@ export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
     }
 
     const newPrice = (validatedValueHaircut(price))
+    const newTime = (parseOneTimeString(time))
 
     setLoader(true)
-    await registerHaircut({ name, price: newPrice })
+    await registerHaircut({ name, price: newPrice, time: newTime })
     setLoader(false)
   }
 
@@ -46,7 +50,7 @@ export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
         <title>Modelos de cortes - Rocha's Client Barber</title>
       </Head>
       <Sidebar>
-        <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+        <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
           <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" >
 
@@ -81,6 +85,11 @@ export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
               <Input color="white" placeholder="Valor do corte ex: 59.90" w="85%" bg="gray.900" type="text" size="lg" mb={4}
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+              />
+
+              <Input color="white" placeholder="Tempo do corte ex: 30" w="85%" bg="gray.900" type="text" size="lg" mb={4}
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
               />
 
               <Button

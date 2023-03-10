@@ -41,7 +41,7 @@ export default function Login() {
       <Head>
         <title>Rocha's Client Barber - Faça login para acessar</title>
       </Head>
-      <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="center">
+      <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="center">
         <Flex width={640} direction="column" p={14} rounded={8}>
           <Center p={4} mb={3}>
             <Image

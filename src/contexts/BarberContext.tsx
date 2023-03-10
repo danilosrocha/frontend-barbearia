@@ -8,7 +8,7 @@ interface BarberContextData {
     listBarbers: (credential: string) => Promise<BarbersItem[]>
     updateDataBarber: (credential: UpdateBarberProps) => Promise<void>
     deleteBarber: (credential: string) => Promise<void>
-    getTimeAvaliable: (credential: GetTimeAvaliableProps) => Promise<GetAvalibleTimesProps>
+    getTimeAvaliable: (credential: GetTimeAvaliableProps) => Promise<string[]>
     getTimeAvaliableFast: (credential: GetTimeAvaliableProps) => Promise<GetAvalibleTimesProps>
 }
 
@@ -35,15 +35,9 @@ interface UpdateBarberProps {
 }
 
 interface GetAvalibleTimesProps {
-    id: string
-    barber_name: string
-    services: Service
+
 }
 
-interface Service {
-    date: string
-    times: string[]
-}
 
 interface GetTimeAvaliableProps {
     barber_id: string

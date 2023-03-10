@@ -9,9 +9,9 @@ import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { toast } from "react-toastify";
 import { ModalCalendary } from "@/components/modalCalendary";
-import moment from 'moment';
 import { BarberContext } from "@/contexts/BarberContext";
-import { validatedDate } from "@/utils/validatedDate";
+import SelectTime from "@/components/timerPicker";
+import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
 
 interface HaircutsItem {
   id: string
@@ -19,6 +19,7 @@ interface HaircutsItem {
   price: number | string
   status: boolean
   user_id: string
+  time: string
 }
 interface BarbersItem {
   id: string
@@ -38,20 +39,24 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   const { registerNewCut } = useContext(HaircutContext)
   const { getTimeAvaliable } = useContext(BarberContext)
 
-  const currentDay = validatedDate(`${moment().date()}/${moment().month() + 1}`)
   const [customer, setCustomer] = useState("")
   const [haircutSelected, setHaircutSelected] = useState(haircuts[0])
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [barberSelected, setBarberSelected] = useState(barbers[0])
   const [availableTime, setAvailableTime] = useState<string[]>()
+  const [initialAvailableTime, setInitialAvailableTime] = useState<string[]>()
+  const [timesUsed, setTimesUsed] = useState<string[]>()
+  const [timeToUsed, setTimeToUsed] = useState<string[]>()
   const [timeSelected, setTimeSelected] = useState<string>()
   const [date, setDate] = useState<Date>();
-  const [dateSelected, setDateSelected] = useState<string>(currentDay);
+  const [dateSelected, setDateSelected] = useState<string>();
   const [isMobile] = useMediaQuery("(max-width: 800px)")
+  const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
   const { isOpen, onOpen, onClose } = useDisclosure()
 
 
+  const timeUsed = Number(haircutSelected?.time) + 10
 
   async function handleRegister() {
     if (!customer) {
@@ -91,11 +96,10 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
 
     if (barberSelected && dateSelected) {
       getTimeAvaliable({ barber_id: barberSelected?.id, date: dateSelected }).then((value) => {
-        const result = barberSelected?.available_at.filter(item => !value?.services?.times.includes(item));
+        const result = barberSelected?.available_at.filter(item => !value.includes(item));
         setAvailableTime(result)
-        if (!timeSelected) {
-          setTimeSelected(result[0])
-        }
+        setTimesUsed(value)
+        setInitialAvailableTime(barberSelected?.available_at)
       });
     }
 
@@ -107,7 +111,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
         <title>Novo agendamento- Rocha's Client Barber</title>
       </Head>
       <Sidebar>
-        <Flex background="barber.900" height="100vh" alignItems="center" justifyContent="flex-start" direction="column">
+        <Flex background="barber.900" minH="100vh" alignItems="center" justifyContent="flex-start" direction="column">
 
           <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" >
 
@@ -130,7 +134,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
 
             </Flex>
 
-            <Flex w="100%" bg="barber.400" align="center" justify="center" pt={8} pb={8} direction="column" rounded={4}>
+            <Flex w="100%" bg="barber.400" align="center" justify="center" pt={8} pb={8} direction="column" rounded={4} >
 
               <Heading mb={4} fontSize="2xl" ml={4} color="white" >Agendar cliente</Heading>
 
@@ -162,18 +166,10 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                 </Select>
               </Flex>
 
-              <Flex direction="column" w="85%" mb={6} justify="space-between" >
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Selecione o horário:</Text>
-                <Flex direction={isMobile ? "column" : "row"} w="100%" align="center">
-                  <Select color="white" w="100%" bg="gray.900" size="lg" mr={isMobile ? 0 : 3} mb={isMobile ? 4 : 0} onChange={(e) => handleChangeSelectTime(e.target.value)}>
-                    {availableTime && availableTime.map(item => (
-                      <option style={{ background: "#1b1c29" }} key={item} value={item}>{item}</option>
-                    ))}
-                  </Select>
-
-
-                  <Button onClick={handleClickItem} w={isMobile ? "100%" : "50%"}>
-                    {!date ? "Escolha o dia" : `Corte dia: ${date?.getDate()}/${date?.getMonth() + 1}`}
+              <Flex align='end' justify='center' w="85%" mb={3} mt={3}>
+                {!availableTime ?
+                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff'>
+                    {!date ? "Escolha o dia" :  `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
                     <ModalCalendary
                       isOpen={isOpen}
                       onClose={onClose}
@@ -182,13 +178,31 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                       date={date}
                       setDateSelected={setDateSelected}
                     />
-                  </Button>
-                </Flex>
+                  </Button> :
+                  <Flex direction='column' w='100%'>
+                    <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
+                    <Flex direction="row" align='center' justify='space-between' >
+                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed}/>
+                      <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
+                        {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
+                          `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
+                        <ModalCalendary
+                          isOpen={isOpen}
+                          onClose={onClose}
+                          onOpen={onOpen}
+                          setDate={setDate}
+                          date={date}
+                          setDateSelected={setDateSelected}
+                        />
+                      </Button>
+                    </Flex>
+                  </Flex>
+                }
 
               </Flex>
 
               <Button
-                isLoading={loader} onClick={handleRegister} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
+                isDisabled={!timeToUsed} isLoading={loader} onClick={handleRegister} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
               >
                 Cadastrar
               </Button>

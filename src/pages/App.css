@@ -104,3 +104,35 @@ abbr[title] {
     background: #fba931;
     color: #403120;
 }
+
+.rc-time-picker-input {
+    text-align: center;
+    font-size: 16px;
+    width: 110px;
+    height: 40px;
+    margin-right: 5px;
+    font-weight: bold;
+    color: #171923;
+}
+
+.rc-time-picker-panel-input-wrap {
+    width: 100%;
+}
+
+.rc-time-picker-panel-input {
+    font-size: 16px;
+    min-width: 100%;
+    text-align: center;
+}
+
+.rc-time-picker-panel {
+    width: 100%;
+}
+
+.rc-time-picker {
+    width: 100%;
+}
+
+.rc-time-picker-panel-inner {
+    text-align: center;
+}

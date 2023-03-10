@@ -24,6 +24,7 @@ interface HaircutsItem {
 interface RegisterHaircutProps {
     name: string
     price: number | string
+    time: string
 }
 
 type HaircutProviderProps = {
@@ -35,6 +36,7 @@ interface UpdateHaircutProps {
     name: string
     price: number | string
     status: string
+    time: string
 }
 
 interface RegisteNewCutProps {
@@ -64,12 +66,13 @@ export const HaircutContext = createContext({} as HaircutContextData)
 
 export function HaircutProvider({ children }: HaircutProviderProps) {
 
-    async function registerHaircut({ name, price }: RegisterHaircutProps) {
+    async function registerHaircut({ name, price, time }: RegisterHaircutProps) {
         try {
             const apiClient = setupAPIClient();
             await apiClient.post('/haircut', {
                 name: name,
                 price: Number(price),
+                time
             })
 
             Router.push("/haircuts")
@@ -98,14 +101,17 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
         }
     }
 
-    async function updateHaircut({ name, price, haircut_id, status }: UpdateHaircutProps) {
+    async function updateHaircut({ name, price, haircut_id, status, time }: UpdateHaircutProps) {
         try {
+            console.log({ name, price, haircut_id, status, time });
+
             const apiClient = setupAPIClient();
             await apiClient.put('/haircut', {
                 haircut_id,
                 name,
                 price: Number(price),
-                status: status === "enabled" ? "true" : "false"
+                status: status === "enabled" ? "true" : "false",
+                time,
             })
 
             Router.push('/haircuts')
