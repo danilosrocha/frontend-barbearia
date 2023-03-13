@@ -55,7 +55,7 @@ export default function Login() {
 
           <Input
             background="barber.400"
-            _hover={{ bg: "#030303" }}
+            _hover={{ bg: "#1b1c29" }}
             color="white"
             variant="filled"
             size="lg"
@@ -75,7 +75,7 @@ export default function Login() {
               placeholder="Digite sua senha"
               type={typePassword}
               value={password}
-              _hover={{ bg: "#030303" }}
+              _hover={{ bg: "#1b1c29" }}
               onChange={(e) => setPassword(e.target.value)}
 
             />

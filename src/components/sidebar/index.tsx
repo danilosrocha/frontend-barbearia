@@ -105,8 +105,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             <Flex h="20" alignItems="center" justifyContent="space-between" mx="8">
                 <Link href="/schedule">
                     <Flex cursor="pointer" userSelect="none" flexDirection="row">
-                        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="white">Barber</Text>
-                        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="button.cta">Client</Text>
+                        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="white">Bigode</Text>
+                        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="button.cta">Grosso</Text>
                     </Flex>
                 </Link>
                 <CloseButton color="white" display={{ base: 'flex', md: 'none' }} onClick={onClose} />
@@ -188,10 +188,10 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 
             <Flex flexDirection="row">
                 <Text ml={8} fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="white">
-                    Barber
+                Bigode
                 </Text>
                 <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" color="button.cta">
-                    Client
+                    Grosso
                 </Text>
             </Flex>
         </Flex>

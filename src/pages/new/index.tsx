@@ -53,7 +53,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   const [isMobile] = useMediaQuery("(max-width: 800px)")
   const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  const [showSpinner, setShowSpinner] = useState(false);
 
   const timeUsed = Number(haircutSelected?.time) + 10
 
@@ -66,6 +66,11 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
     setLoader(true)
     await registerNewCut({ customer, haircut_id: haircutSelected?.id, barber_id: barberSelected?.id, time: timeToUsed[0], date: dateSelected, time_occuped: timeToUsed })
     setLoader(false)
+    setCustomer("")
+    setTimeToUsed(null)
+    setDateSelected(null)
+    setAvailableTime(null)
+    setShowSpinner(false)
   }
 
   function handleBackButton() {
@@ -163,11 +168,14 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
 
               <Flex align='end' justify='center' w="85%" mb={3} mt={3}>
                 {!availableTime ?
-                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff'>
+                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
                     {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
                     <ModalCalendary
                       isOpen={isOpen}
-                      onClose={onClose}
+                      onClose={() => {
+                        setShowSpinner(true)
+                        onClose()
+                      }}
                       onOpen={onOpen}
                       setDate={setDate}
                       date={date}
