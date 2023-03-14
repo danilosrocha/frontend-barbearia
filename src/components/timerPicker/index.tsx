@@ -10,7 +10,7 @@ interface OccupiedTime {
     minute: Number
 }
 
-export default function SelectTime({ availableTime, timeUsed, initialAvailableTime, timesAlreadyUsed, setTimeToUsed }) {
+export default function SelectTime({ availableTime, timeUsed, initialAvailableTime, timesAlreadyUsed, setTimeToUsed, setOpenResume }) {
   
     const [value, setValue] = useState(null);
     const [occupiedTimes, setOccupiedTimes] = useState<OccupiedTime[]>();
@@ -40,6 +40,7 @@ export default function SelectTime({ availableTime, timeUsed, initialAvailableTi
         const concatenatedArray = [...timesAlreadyUsed, ...cutSchedule];
 
         setTimesAlreadyUse(concatenatedArray)
+        setOpenResume(true)
 
         return true
     }

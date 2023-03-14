@@ -13,6 +13,7 @@ import { setConfigUserFromEnv } from "@/utils/isClient";
 import SelectTime from "@/components/timerPicker";
 import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
 import { motion } from "framer-motion";
+import { ModalResume } from "@/components/modalResume";
 
 interface HaircutsItem {
   id: string
@@ -58,9 +59,10 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
   const [isMobile] = useMediaQuery("(max-width: 750px)")
   const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
   const [showSpinner, setShowSpinner] = useState(false);
+  const [openResume, setOpenResume] = useState(false);
+  const [dataResume, setDataResume] = useState(null);
 
   const timeUsed = Number(haircutSelected?.time)
-
 
   async function handleRegister() {
     if (!name) {
@@ -112,7 +114,16 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
       });
     }
 
-  }, [barberSelected, dateSelected])
+    if(openResume) {
+      setDataResume({
+        customer: name,
+        haircut: haircutSelected,
+        barber: barberSelected,
+        time: timeToUsed[0],
+        date: dateSelected,
+      })
+    }
+  }, [barberSelected, dateSelected, openResume])
 
   return (
     <>
@@ -223,26 +234,35 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
                   <Flex direction='column' w='100%'>
                     <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
                     <Flex direction="row" align='center' justify='space-between' >
-                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
+                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} setOpenResume={setOpenResume} />
                       <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1} isLoading={!showSpinner}>
                         {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
                           `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
-                        <ModalCalendary
-                          isOpen={isOpen}
-                          onClose={onClose}
-                          onOpen={onOpen}
-                          setDate={setDate}
-                          date={date}
-                          setDateSelected={setDateSelected}
-                        />
+                        {!openResume &&
+                          <ModalCalendary
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            onOpen={onOpen}
+                            setDate={setDate}
+                            date={date}
+                            setDateSelected={setDateSelected}
+                          />}
                       </Button>
                     </Flex>
                   </Flex>
-
                 }
-
-
               </Flex>
+            }
+
+            {openResume &&
+              <ModalResume
+                isOpen={isOpen}
+                onClose={onClose}
+                onOpen={onOpen}
+                openResume={openResume}
+                data={dataResume}
+                setOpenResume={setOpenResume}
+              />
             }
 
             <Button

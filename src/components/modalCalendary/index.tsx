@@ -7,6 +7,8 @@ import {
     ModalBody,
     ModalCloseButton,
 } from '@chakra-ui/react'
+import moment from 'moment';
+import { useState } from 'react';
 import Calendar from 'react-calendar';
 
 
@@ -26,8 +28,16 @@ export function ModalCalendary({ isOpen, onOpen, onClose, date, setDate, setDate
         setDateSelected(newDate)
         onClose()
     }
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={() => {
+            if (!date) {
+                const currentDate = moment().format('D:M');
+                const newDate = validatedDate(currentDate)
+                setDateSelected(newDate)
+            }
+            onClose()
+        }}>
             <ModalOverlay />
             <ModalContent bg="barber.400">
                 <ModalHeader color="white">Selecione a data</ModalHeader>

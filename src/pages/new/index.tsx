@@ -12,6 +12,8 @@ import { ModalCalendary } from "@/components/modalCalendary";
 import { BarberContext } from "@/contexts/BarberContext";
 import SelectTime from "@/components/timerPicker";
 import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
+import moment from "moment";
+import { validatedDate } from "@/utils/validatedDate";
 
 interface HaircutsItem {
   id: string
@@ -87,7 +89,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   }
 
 
-  function handleClickItem() {
+  async function handleClickItem() {
     onOpen()
   }
 
@@ -194,7 +196,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                 <Flex align='end' justify='center' w="85%" mb={3} mt={3}>
                   {!availableTime ?
                     <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
-                      {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
+                      {!date ? "Escolha o dia" : `Corte dia: ${dateSelected}`}
                       <ModalCalendary
                         isOpen={isOpen}
                         onClose={() => {
@@ -210,7 +212,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                     <Flex direction='column' w='100%'>
                       <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
                       <Flex direction="row" align='center' justify='space-between' >
-                        <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
+                        <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} setOpenResume={null}/>
                         <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
                           {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
                             `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
