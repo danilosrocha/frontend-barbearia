@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Spinner, Stack, Switch, Text, useMediaQuery, Link as ChackLink } from "@chakra-ui/react";
+import { Button, Flex, Heading, Spinner, Stack, Switch, Text, useMediaQuery, Link as ChackLink, Box } from "@chakra-ui/react";
 import { Sidebar } from "@/components/sidebar";
 import Head from "next/head";
 import Link from "next/link";
@@ -60,22 +60,22 @@ export default function Haircuts({ haircuts }: HaircutsBarber) {
 
             <Flex w="100%" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} justifyContent="space-between" mt={6} mb={4} >
 
-              <Flex mb={isMobile ? "10px" : "0"} >
+              <Flex mb={isMobile ? "10px" : "0"} direction={isMobile ? "column" : "row"}>
                 <Heading fontSize="3xl" mr={4} color="orange.900">Modelos de corte</Heading>
 
-                {!isMobile && <Link href="/haircuts/new" onClick={handleRegisterCut}>
+                <Link href="/haircuts/new" onClick={handleRegisterCut}>
                   <Button color="white" bg="barber.400" _hover={{ bg: "gray.900" }} isLoading={loader}>
                     Cadastrar novo
                   </Button>
-                </Link>}
+                </Link>
 
               </Flex>
             </Flex>
 
             {haircuts && haircuts.map(barber => {
               return (
-                <React.Fragment key={barber?.barber_name}>
-                  <Flex align='center' mb={2} gap={3}>
+                <Box key={barber?.barber_name} >
+                  <Flex align='center' mb={4} gap={3} w="100%" p={3} bg="barber.400" justify='space-between'>
                     <Heading fontSize="xl" color="white" ml={2} fontWeight="bold">Barbeiro: {barber?.barber_name}</Heading>
                     <Button bg='transparent' _hover={{ bg: '#1B1C29' }} onClick={() => handleShowHaircuts(barber.barber_name)}>
                       {showHaircuts[barber.barber_name] ? <AiOutlineLine color="#fff" size={20} /> : <AiOutlinePlus color="#fff" size={20} />}
@@ -105,7 +105,7 @@ export default function Haircuts({ haircuts }: HaircutsBarber) {
                     }
                     return null
                   })}
-                </React.Fragment>
+                </Box>
               )
             })}
 

@@ -56,6 +56,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
   const [timeToUsed, setTimeToUsed] = useState<string[]>()
   const [date, setDate] = useState<Date>();
   const [showSpinner, setShowSpinner] = useState(false);
+  const [, setOpenResume] = useState(false);
   const [isMobile] = useMediaQuery("(max-width: 800px)")
   const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -212,7 +213,7 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
                     <Flex direction='column' w='100%'>
                       <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
                       <Flex direction="row" align='center' justify='space-between' >
-                        <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} setOpenResume={null}/>
+                        <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} setOpenResume={setOpenResume}/>
                         <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
                           {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
                             `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
