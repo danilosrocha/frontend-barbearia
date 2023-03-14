@@ -34,6 +34,7 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
     const [loader, setLoader] = useState(false)
     const [isMobile] = useMediaQuery("(max-width: 800px)")
     const [isLoading, setIsLoading] = useState(false)
+    const [isLoadingDelete, setIsLoadingDelete] = useState(false)
     const [disableHaircut, setDisableHaircut] = useState(haircutDetail?.status === true ? "enabled" : "disabled")
     const precoFormatado = parseFloat(String(price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     async function handleUpdateHaircut() {
@@ -60,6 +61,14 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
 
     function handleBackButton() {
         setIsLoading(true);
+    }
+
+    async function handleDeleteHaircut() {
+        const newPrice = (validatedValueHaircut(price))
+        const newTime = (parseOneTimeString(time))
+        setIsLoadingDelete(true)
+        await updateHaircut({ name, haircut_id, status: "disable", price: newPrice, time: newTime })
+        setIsLoadingDelete(false)
     }
 
     return (
@@ -118,9 +127,15 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
                             </Flex>
 
                             <Button
-                                isDisabled={!subscriptions} isLoading={loader} onClick={handleUpdateHaircut} w="85%" mb={4} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
+                                isDisabled={!subscriptions} isLoading={loader} onClick={handleUpdateHaircut} w="85%" mb={3} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
                             >
                                 Editar
+                            </Button>
+
+                            <Button
+                                isLoading={isLoadingDelete} onClick={handleDeleteHaircut} w="85%" mb={4} bg="red.600" size="lg" _hover={{ bg: 'red.500' }}
+                            >
+                                Excluir o corte
                             </Button>
 
                             {!subscriptions && (

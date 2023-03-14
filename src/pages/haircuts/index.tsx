@@ -45,7 +45,7 @@ export default function Haircuts({ haircuts }: HaircutsBarber) {
       ...showHaircuts,
       [barberName]: !showHaircuts[barberName],
     });
-    
+
   };
 
   return (
@@ -85,22 +85,25 @@ export default function Haircuts({ haircuts }: HaircutsBarber) {
                   {showHaircuts[barber.barber_name] && barber?.haircuts?.map(haircut => {
                     const priceFormat = parseFloat(String(haircut?.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                     const isItemLoading = loadingItemId === haircut.id;
-                    return (
-                      <Link key={haircut.id} href={`/haircuts/${haircut.id}`} onClick={() => handleClickItem(haircut.id)} >
-                        <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
-                          {isItemLoading ? <Spinner color='button.cta' speed='0.8s' size='md' /> : (
-                            <>
-                              <Flex direction="row" alignItems="center" justifyContent="center" mb={isMobile ? "10px" : "0"}>
-                                <IoMdPricetag color="#fba931" size={28} />
-                                <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{haircut?.name} - </Text>
-                                <Text color="white" fontWeight="bold" ml={1}>{(haircut?.time)} min</Text>
-                              </Flex>
-                              <Text color="white" fontWeight="bold">Preço: {priceFormat}</Text>
-                            </>
-                          )}
-                        </Flex>
-                      </Link>
-                    );
+                    if (haircut.status) {
+                      return (
+                        <Link key={haircut.id} href={`/haircuts/${haircut.id}`} onClick={() => handleClickItem(haircut.id)} >
+                          <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
+                            {isItemLoading ? <Spinner color='button.cta' speed='0.8s' size='md' /> : (
+                              <>
+                                <Flex direction="row" alignItems="center" justifyContent="center" mb={isMobile ? "10px" : "0"}>
+                                  <IoMdPricetag color="#fba931" size={28} />
+                                  <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{haircut?.name} - </Text>
+                                  <Text color="white" fontWeight="bold" ml={1}>{(haircut?.time)} min</Text>
+                                </Flex>
+                                <Text color="white" fontWeight="bold">Preço: {priceFormat}</Text>
+                              </>
+                            )}
+                          </Flex>
+                        </Link>
+                      );
+                    }
+                    return null
                   })}
                 </React.Fragment>
               )

@@ -126,8 +126,6 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
 
     async function updateHaircut({ name, price, haircut_id, status, time }: UpdateHaircutProps) {
         try {
-            console.log({ name, price, haircut_id, status, time });
-
             const apiClient = setupAPIClient();
             await apiClient.put('/haircut', {
                 haircut_id,
@@ -138,7 +136,12 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
             })
 
             Router.push('/haircuts')
-            toast.success("Corte atualizado com sucesso!")
+            if (status !== "enabled") {
+                toast.success("Corte excluído com sucesso!")
+            } else {
+                toast.success("Corte atualizado com sucesso!")
+            }
+
         } catch (error) {
             console.log(error);
             toast.error("Erro ao cadastrar corte!")

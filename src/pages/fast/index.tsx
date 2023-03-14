@@ -205,9 +205,12 @@ export default function FastSchedule({ barbers, user }: HaircutsProps) {
                 >
                   <option disabled value="">Selecione um corte</option>
                   {barberSelected?.haircuts.map(item => {
-                    return (
-                      <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
-                    )
+                    if (item.status) {
+                      return (
+                        <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
+                      )
+                    }
+                    return null
                   })}
                 </Select>
               </Flex>
