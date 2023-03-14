@@ -8,7 +8,7 @@ import { canSSRAuth } from "@/utils/canSSRAuth";
 import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { toast } from "react-toastify";
-import { parseUpdateTimeString } from "@/utils/validatedTime";
+import { parseTimeString } from "@/utils/validatedTime";
 import { BarberContext } from "@/contexts/BarberContext";
 
 export interface BarberProps {
@@ -79,7 +79,7 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
     }
 
     async function handleValidatedTime() {
-        return parseUpdateTimeString(startWork, endWork, Number(workTime))
+        return parseTimeString(startWork, endWork, Number(workTime))
     }
 
     return (
