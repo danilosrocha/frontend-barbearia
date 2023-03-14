@@ -12,7 +12,6 @@ import { canSSRGuestFast } from "@/utils/canSSRGuestFast";
 import { setConfigUserFromEnv } from "@/utils/isClient";
 import SelectTime from "@/components/timerPicker";
 import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
-import { motion } from "framer-motion";
 import { ModalResume } from "@/components/modalResume";
 
 interface HaircutsItem {
@@ -40,7 +39,7 @@ interface HaircutsProps {
   }
 }
 
-export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps) {
+export default function FastSchedule({ barbers, user }: HaircutsProps) {
 
   const { registerNewCutFast } = useContext(HaircutContext)
   const { getTimeAvaliableFast } = useContext(BarberContext)
@@ -299,14 +298,6 @@ export const getServerSideProps = canSSRGuestFast(async (ctx) => {
         }
       })
 
-    const response = await apiClient.get('/haircuts/barber',
-      {
-        params: {
-          user_id: user?.data?.id,
-          status: true
-        }
-      })
-
     const barbers = await apiClient.get('/barbers/fast',
       {
         params: {
@@ -314,10 +305,9 @@ export const getServerSideProps = canSSRGuestFast(async (ctx) => {
           user_id: user?.data?.id,
         }
       })
-
+    
     return {
       props: {
-        haircuts: response.data,
         barbers: barbers.data,
         user: user.data
       }

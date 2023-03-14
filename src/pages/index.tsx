@@ -3,36 +3,18 @@ import Head from "next/head";
 import Image from "next/image";
 import logoImg from '../../public/images/logo-simplificada.svg'
 import { Spinner } from '@chakra-ui/react'
-import { useRouter } from "next/router";
+import Router from "next/router";
 import { canSSRGuest } from "@/utils/canSSRGuest";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Preloader() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleRouteChangeComplete = () => {
-      setLoading(false);
-    };
+    setTimeout(() => {
+        Router.push('/fast');
+    }, 1);
 
-    router.events.on('routeChangeComplete', handleRouteChangeComplete);
-
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChangeComplete);
-    };
-  }, [router]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (loading) {
-        console.error('A página não foi carregada em tempo hábil. Redirecionando manualmente...');
-        router.push('/fast');
-      }
-    }, 10);
-
-    return () => clearTimeout(timeout);
-  }, [loading, router]);
+  }, []);
 
   return (
     <>
