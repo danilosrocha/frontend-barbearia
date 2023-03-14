@@ -72,7 +72,7 @@ export default function NewBarber() {
               <Heading mb={4} fontSize="2xl" ml={4} color="white" >Cadastrar barbeiro</Heading>
 
               <Flex direction="column" w="85%">
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Nome do barbeiro:</Text>
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Nome do barbeiro:</Text>
                 <Input color="white" placeholder="Digite o nome:" w="100%" bg="gray.900" type="text" size="lg" mb={3}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -82,13 +82,13 @@ export default function NewBarber() {
               <Flex justify="space-between" w="85%" gap={4} direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} mb={3}>
 
                 <Flex direction="column" w="100%">
-                  <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Horário de entrada</Text>
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Horário de entrada</Text>
                   <Input color="white" placeholder="Exemplo: 7:00" w="100%" bg="gray.900" type="text" size="lg" mb={3}
                     value={startWork}
                     onChange={(e) => setStartWork(e.target.value)}
                   />
 
-                  <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Horário de saída</Text>
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Horário de saída</Text>
                   <Input color="white" placeholder="Exemplo: 20:00" w="100%" bg="gray.900" type="text" size="lg"
                     value={endWork}
                     onChange={(e) => setEndWork(e.target.value)}

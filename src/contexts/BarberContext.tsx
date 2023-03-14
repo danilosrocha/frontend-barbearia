@@ -32,6 +32,7 @@ type BarberProviderProps = {
 interface UpdateBarberProps {
     barber_id: string
     barber_name: string
+    available_at: string[]
 }
 
 interface GetTimeAvaliableProps {
@@ -109,12 +110,13 @@ export function BarberProvider({ children }: BarberProviderProps) {
         }
     }
 
-    async function updateDataBarber({ barber_name, barber_id }: UpdateBarberProps) {
+    async function updateDataBarber({ barber_name, barber_id,  available_at }: UpdateBarberProps) {
         try {
             const apiClient = setupAPIClient();
             await apiClient.put('/barber', {
                 barber_id,
-                barber_name
+                barber_name,
+                available_at
             })
 
             Router.push('/barbers')

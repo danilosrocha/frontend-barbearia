@@ -8,7 +8,7 @@ import { canSSRAuth } from "@/utils/canSSRAuth";
 import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { toast } from "react-toastify";
-import { validatedValueHaircut } from "@/utils/validatedValueHaircut";
+import { parseUpdateTimeString } from "@/utils/validatedTime";
 import { BarberContext } from "@/contexts/BarberContext";
 
 export interface BarberProps {
@@ -16,6 +16,7 @@ export interface BarberProps {
     barber_name: string
     status: boolean
     hair_cuts: number
+    available_at: string[]
     services: ServiceProps[]
 }
 
@@ -41,6 +42,9 @@ interface BarbersProps {
 export default function EditBarber({ barberDetail, subscriptions, barber_id }: BarbersProps) {
     const { updateDataBarber, deleteBarber } = useContext(BarberContext)
     const [name, setName] = useState(barberDetail?.barber_name || "")
+    const [startWork, setStartWork] = useState(barberDetail?.available_at[0] || "")
+    const [endWork, setEndWork] = useState(barberDetail?.available_at[barberDetail?.available_at?.length - 1] || "")
+    const [workTime, setWorkTime] = useState("10")
     const [loader, setLoader] = useState(false)
     const [loaderDel, setLoaderDel] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -54,7 +58,8 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
         }
 
         setLoader(true)
-        await updateDataBarber({ barber_name: name, barber_id })
+        const response = await handleValidatedTime()
+        await updateDataBarber({ barber_name: name, barber_id, available_at: response })
         setLoader(false)
     }
 
@@ -71,6 +76,10 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
 
     function handleBackButton() {
         setIsLoading(true);
+    }
+
+    async function handleValidatedTime() {
+        return parseUpdateTimeString(startWork, endWork, Number(workTime))
     }
 
     return (
@@ -105,11 +114,26 @@ export default function EditBarber({ barberDetail, subscriptions, barber_id }: B
                         <Flex w="100%" bg="barber.400" align="center" justify="center" pt={8} pb={8} direction="column" rounded={4}>
 
                             <Heading mb={4} fontSize="2xl" ml={4} color="white" >Editar dados</Heading>
+                            <Flex direction="column" w="85%" mb={6}>
 
-                            <Input color="white" placeholder="Nome" w="85%" bg="gray.900" type="text" size="lg" mb={6}
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
+                                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Nome do barbeiro</Text>
+                                <Input color="white" placeholder="Nome" w="100%" bg="gray.900" type="text" size="lg" mb={3}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+
+                                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Horário de entrada</Text>
+                                <Input color="white" placeholder="Exemplo: 7:00" w="100%" bg="gray.900" type="text" size="lg" mb={3}
+                                    value={startWork}
+                                    onChange={(e) => setStartWork(e.target.value)}
+                                />
+
+                                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Horário de saída</Text>
+                                <Input color="white" placeholder="Exemplo: 20:00" w="100%" bg="gray.900" type="text" size="lg"
+                                    value={endWork}
+                                    onChange={(e) => setEndWork(e.target.value)}
+                                />
+                            </Flex>
 
                             <Button
                                 isLoading={loader} onClick={handleUpdateDataBarber} w="85%" mb={3} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
