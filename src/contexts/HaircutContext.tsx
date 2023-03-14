@@ -11,6 +11,7 @@ interface HaircutContextData {
     registerNewCut: (credential: RegisteNewCutProps) => Promise<void>
     registerNewCutFast: (credential: RegisteScheduleProps) => Promise<void>
     finishCut: (credential: FinishCutProps) => Promise<void>
+    listHaircutsBarber: (credential: string) => Promise<BarberHaircuts[]>
 }
 
 interface HaircutsItem {
@@ -19,12 +20,14 @@ interface HaircutsItem {
     price: number | string
     status: boolean
     user_id: string
+    barber_id: string
 }
 
 interface RegisterHaircutProps {
     name: string
     price: number | string
     time: string
+    barber_id: string
 }
 
 type HaircutProviderProps = {
@@ -54,7 +57,7 @@ interface RegisteScheduleProps {
     time: string
     date: string
     user_id: string
-    time_occuped:  string[]
+    time_occuped: string[]
 }
 
 interface FinishCutProps {
@@ -62,18 +65,37 @@ interface FinishCutProps {
     status: string
 }
 
+interface BarberHaircuts {
+    barber_name: string
+    id: string
+    haircuts: Haircut[]
+}
+
+interface Haircut {
+    id: string
+    name: string
+    price: number
+    status: boolean
+    time: string
+    created_at: string
+    updated_at: string
+    user_id: string
+    barber_id: string
+}
+
 
 export const HaircutContext = createContext({} as HaircutContextData)
 
 export function HaircutProvider({ children }: HaircutProviderProps) {
 
-    async function registerHaircut({ name, price, time }: RegisterHaircutProps) {
+    async function registerHaircut({ name, price, time, barber_id }: RegisterHaircutProps) {
         try {
             const apiClient = setupAPIClient();
             await apiClient.post('/haircut', {
                 name: name,
                 price: Number(price),
-                time
+                time,
+                barber_id
             })
 
             Router.push("/haircuts")
@@ -144,10 +166,9 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
             toast.error("Erro ao cadastrar agendamento!")
         }
     }
+
     async function registerNewCutFast({ customer, haircut_id, barber_id, date, time, user_id, time_occuped }: RegisteScheduleProps) {
         try {
-            console.log({ customer, haircut_id, barber_id, date, time, user_id });
-
             const apiClient = setupAPIClient();
             await apiClient.post('/schedule/fast', {
                 customer,
@@ -165,6 +186,24 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
                 return
             }
             toast.error("Erro ao cadastrar agendamento!")
+        }
+    }
+
+    async function listHaircutsBarber(status: string) {
+
+        const boStats = status === "enabled" ? false : true
+
+        try {
+            const apiClient = setupAPIClient();
+            const response = await apiClient.get('/haircuts/barber', {
+                params: {
+                    status: boStats
+                }
+            })
+
+            return response.data
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -191,7 +230,7 @@ export function HaircutProvider({ children }: HaircutProviderProps) {
 
 
     return (
-        <HaircutContext.Provider value={{ registerHaircut, listHaircuts, updateHaircut, registerNewCut, finishCut, registerNewCutFast }}>
+        <HaircutContext.Provider value={{ registerHaircut, listHaircuts, updateHaircut, registerNewCut, finishCut, registerNewCutFast, listHaircutsBarber }}>
             {children}
         </HaircutContext.Provider>
     )

@@ -11,7 +11,8 @@ interface OccupiedTime {
 }
 
 export default function SelectTime({ availableTime, timeUsed, initialAvailableTime, timesAlreadyUsed, setTimeToUsed }) {
-    const [value, setValue] = useState(moment('10:00', 'HH:mm'));
+  
+    const [value, setValue] = useState(null);
     const [occupiedTimes, setOccupiedTimes] = useState<OccupiedTime[]>();
     const [enableMinute, setEnableMinute] = useState(false);
     const [cutSchedule, setCutSchedule] = useState<OccupiedTime[]>();
@@ -79,7 +80,9 @@ export default function SelectTime({ availableTime, timeUsed, initialAvailableTi
     };
 
     useEffect(() => {
-
+        const now = moment(); 
+        now.startOf('hour'); 
+        setValue(now);
     }, [])
 
     return (

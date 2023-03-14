@@ -54,7 +54,7 @@ export default function Profile({ user, premium }: ProfileProps) {
               <Heading fontSize="3xl" color="orange.900" mt={6} mb={4} mr={4}>Minha Conta</Heading>
             </Flex>
 
-            <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" alignItems="center" justifyContent="center" bg="barber.400" gap={5} rounded={4}>
+            <Flex pt={8} pb={8} maxW="1200px" w="100%" direction="column" alignItems="center" justifyContent="center" bg="barber.400" gap={4} rounded={4}>
 
               <Flex direction="column" w="85%" >
                 <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Nome da barbearia:</Text>

@@ -36,26 +36,29 @@ interface HaircutsProps {
 }
 
 export default function New({ haircuts, barbers }: HaircutsProps) {
+
   const { registerNewCut } = useContext(HaircutContext)
   const { getTimeAvaliable } = useContext(BarberContext)
 
   const [customer, setCustomer] = useState("")
-  const [haircutSelected, setHaircutSelected] = useState(haircuts[0])
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [barberSelected, setBarberSelected] = useState(barbers[0])
+  // Selected
+  const [haircutSelected, setHaircutSelected] = useState<HaircutsItem>()
+  const [barberSelected, setBarberSelected] = useState<BarbersItem>()
+  const [dateSelected, setDateSelected] = useState<string>();
+  // 
   const [availableTime, setAvailableTime] = useState<string[]>()
   const [initialAvailableTime, setInitialAvailableTime] = useState<string[]>()
   const [timesUsed, setTimesUsed] = useState<string[]>()
   const [timeToUsed, setTimeToUsed] = useState<string[]>()
   const [date, setDate] = useState<Date>();
-  const [dateSelected, setDateSelected] = useState<string>();
+  const [showSpinner, setShowSpinner] = useState(false);
   const [isMobile] = useMediaQuery("(max-width: 800px)")
   const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [showSpinner, setShowSpinner] = useState(false);
 
-  const timeUsed = Number(haircutSelected?.time) + 10
+  const timeUsed = Number(haircutSelected?.time)
 
   async function handleRegister() {
     if (!customer) {
@@ -66,18 +69,14 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
     setLoader(true)
     await registerNewCut({ customer, haircut_id: haircutSelected?.id, barber_id: barberSelected?.id, time: timeToUsed[0], date: dateSelected, time_occuped: timeToUsed })
     setLoader(false)
-    setCustomer("")
-    setTimeToUsed(null)
-    setDateSelected(null)
-    setAvailableTime(null)
-    setShowSpinner(false)
+
   }
 
   function handleBackButton() {
     setIsLoading(true)
   }
 
-  function handleChangeSelect(id: string) {
+  function handleChangeSelectHaircut(id: string) {
     const haircutItem = haircuts?.find(item => item.id === id)
     setHaircutSelected(haircutItem)
   }
@@ -139,71 +138,97 @@ export default function New({ haircuts, barbers }: HaircutsProps) {
               <Heading mb={4} fontSize="2xl" ml={4} color="white" >Agendar cliente</Heading>
 
               <Flex direction="column" w="85%">
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Nome do cliente:</Text>
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Nome do cliente:</Text>
                 <Input color="white" placeholder="Digite o nome:" w="100%" bg="gray.900" type="text" size="lg" mb={3}
                   value={customer}
                   onChange={(e) => setCustomer(e.target.value)}
                 />
               </Flex>
 
-              <Flex direction="column" w="85%">
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Selecione o corte:</Text>
-                <Select color="white" w="100%" bg="gray.900" size="lg" mb={3} onChange={(e) => handleChangeSelect(e.target.value)}>
-                  {haircuts?.map(item => (
-                    <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
-                  ))}
-                </Select>
-              </Flex>
+              {customer &&
+                <Flex direction="column" w="85%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
+                  <Select
+                    color="white"
+                    w="100%"
+                    bg="gray.900"
+                    size="lg"
+                    mb={3}
+                    onChange={(e) => handleChangeSelectBarber(e.target.value)}
+                    defaultValue=""
+                  >
+                    <option disabled value="">Selecione um barbeiro</option>
+                    {barbers?.map(item => {
+                      return (
+                        <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
+                      )
+                    })}
+                  </Select>
+                </Flex>
+              }
 
-              <Flex direction="column" w="85%">
-                <Text color="white" mb={3} fontSize="xl" fontWeight="bold">Selecione o barbeiro:</Text>
-                <Select color="white" w="100%" bg="gray.900" size="lg" mb={3} onChange={(e) => handleChangeSelectBarber(e.target.value)}>
-                  {barbers?.map(item => {
-                    return (
-                      <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
-                    )
-                  })}
-                </Select>
-              </Flex>
 
-              <Flex align='end' justify='center' w="85%" mb={3} mt={3}>
-                {!availableTime ?
-                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
-                    {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
-                    <ModalCalendary
-                      isOpen={isOpen}
-                      onClose={() => {
-                        setShowSpinner(true)
-                        onClose()
-                      }}
-                      onOpen={onOpen}
-                      setDate={setDate}
-                      date={date}
-                      setDateSelected={setDateSelected}
-                    />
-                  </Button> :
-                  <Flex direction='column' w='100%'>
-                    <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
-                    <Flex direction="row" align='center' justify='space-between' >
-                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
-                      <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
-                        {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
-                          `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
-                        <ModalCalendary
-                          isOpen={isOpen}
-                          onClose={onClose}
-                          onOpen={onOpen}
-                          setDate={setDate}
-                          date={date}
-                          setDateSelected={setDateSelected}
-                        />
-                      </Button>
+              {barberSelected &&
+                <Flex direction="column" w="85%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o corte:</Text>
+                  <Select
+                    color="white"
+                    w="100%"
+                    bg="gray.900"
+                    size="lg"
+                    mb={3}
+                    onChange={(e) => handleChangeSelectHaircut(e.target.value)}
+                    defaultValue=""
+                  >
+                    <option disabled value="">Selecione um corte</option>
+                    {haircuts?.map(item => {
+                      return (
+                        <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
+                      )
+                    })}
+                  </Select>
+                </Flex>
+              }
+
+              {haircutSelected &&
+                <Flex align='end' justify='center' w="85%" mb={3} mt={3}>
+                  {!availableTime ?
+                    <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
+                      {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
+                      <ModalCalendary
+                        isOpen={isOpen}
+                        onClose={() => {
+                          setShowSpinner(true)
+                          onClose()
+                        }}
+                        onOpen={onOpen}
+                        setDate={setDate}
+                        date={date}
+                        setDateSelected={setDateSelected}
+                      />
+                    </Button> :
+                    <Flex direction='column' w='100%'>
+                      <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
+                      <Flex direction="row" align='center' justify='space-between' >
+                        <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
+                        <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1}>
+                          {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
+                            `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
+                          <ModalCalendary
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            onOpen={onOpen}
+                            setDate={setDate}
+                            date={date}
+                            setDateSelected={setDateSelected}
+                          />
+                        </Button>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                }
+                  }
 
-              </Flex>
-
+                </Flex>
+              }
               <Button
                 isDisabled={!timeToUsed} isLoading={loader} onClick={handleRegister} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
               >

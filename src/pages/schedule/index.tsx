@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { IoMdPerson } from 'react-icons/io'
 import { canSSRAuth } from "@/utils/canSSRAuth";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { setupAPIClient } from "@/services/api";
 import { HaircutContext } from "@/contexts/HaircutContext";
 import { ModalInfo } from "@/components/modal";

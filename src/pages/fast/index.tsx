@@ -12,6 +12,7 @@ import { canSSRGuestFast } from "@/utils/canSSRGuestFast";
 import { setConfigUserFromEnv } from "@/utils/isClient";
 import SelectTime from "@/components/timerPicker";
 import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
+import { motion } from "framer-motion";
 
 interface HaircutsItem {
   id: string
@@ -27,6 +28,7 @@ interface BarbersItem {
   hair_cuts: number
   status: boolean
   available_at?: string[]
+  haircuts: HaircutsItem[]
 }
 
 interface HaircutsProps {
@@ -43,8 +45,7 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
   const { getTimeAvaliableFast } = useContext(BarberContext)
   const [name, setName] = useState('')
   const [loader, setLoader] = useState(false)
-  const [barberSelected, setBarberSelected] = useState(barbers[0])
-  const [timeSelected, setTimeSelected] = useState<string>()
+  const [barberSelected, setBarberSelected] = useState<BarbersItem>()
   const [user_id, setUserId] = useState<string>(user?.id)
   const [availableTime, setAvailableTime] = useState<string[]>()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -52,13 +53,14 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
   const [date, setDate] = useState<Date>();
   const [initialAvailableTime, setInitialAvailableTime] = useState<string[]>()
   const [timesUsed, setTimesUsed] = useState<string[]>()
-  const [haircutSelected, setHaircutSelected] = useState(haircuts[0])
+  const [haircutSelected, setHaircutSelected] = useState<HaircutsItem>()
   const [timeToUsed, setTimeToUsed] = useState<string[]>()
   const [isMobile] = useMediaQuery("(max-width: 750px)")
   const [isMobileSmall] = useMediaQuery("(max-width: 500px)")
   const [showSpinner, setShowSpinner] = useState(false);
 
   const timeUsed = Number(haircutSelected?.time)
+
 
   async function handleRegister() {
     if (!name) {
@@ -82,6 +84,8 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
     setDateSelected(null)
     setAvailableTime(null)
     setShowSpinner(false)
+    setBarberSelected(null)
+    setHaircutSelected(null)
   }
 
   async function handleChangeSelectBarber(id: string) {
@@ -93,8 +97,8 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
     onOpen()
   }
 
-  function handleChangeSelect(id: string) {
-    const haircutItem = haircuts?.find(item => item.id === id)
+  function handleChangeSelectHaircut(id: string) {
+    const haircutItem = barberSelected?.haircuts?.find(item => item.id === id)
     setHaircutSelected(haircutItem)
   }
 
@@ -155,65 +159,91 @@ export default function FastSchedule({ barbers, haircuts, user }: HaircutsProps)
               />
             </Flex>
 
-            <Flex direction="column" w="100%">
-              <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
-              <Select color="white" w="100%" bg="gray.900" size="lg" mb={4} onChange={(e) => handleChangeSelectBarber(e.target.value)}>
-                {barbers?.map(item => {
-                  return (
-                    <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
-                  )
-                })}
-              </Select>
-            </Flex>
+            {name &&
+              <Flex direction="column" w="100%">
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
+                <Select
+                  color="white"
+                  w="100%"
+                  bg="gray.900"
+                  size="lg"
+                  mb={3}
+                  onChange={(e) => handleChangeSelectBarber(e.target.value)}
+                  defaultValue=""
+                >
+                  <option disabled value="">Selecione um barbeiro</option>
+                  {barbers?.map(item => {
+                    return (
+                      <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
+                    )
+                  })}
+                </Select>
+              </Flex>
+            }
 
-            <Flex direction="column" w="100%">
-              <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Selecione o corte:</Text>
-              <Select color="white" w="100%" bg="gray.900" size="lg" mb={4} onChange={(e) => handleChangeSelect(e.target.value)}>
-                {haircuts?.map(item => (
-                  <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
-                ))}
-              </Select>
-            </Flex>
+            {barberSelected &&
+              <Flex direction="column" w="100%">
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o corte:</Text>
+                <Select
+                  color="white"
+                  w="100%"
+                  bg="gray.900"
+                  size="lg"
+                  mb={3}
+                  onChange={(e) => handleChangeSelectHaircut(e.target.value)}
+                  defaultValue=""
+                >
+                  <option disabled value="">Selecione um corte</option>
+                  {barberSelected?.haircuts.map(item => {
+                    return (
+                      <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
+                    )
+                  })}
+                </Select>
+              </Flex>
+            }
 
-            <Flex align='end' justify='center' w="100%" mb={3} mt={3}>
-              {!availableTime ?
-                <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
-                  {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
-                  <ModalCalendary
-                    isOpen={isOpen}
-                    onClose={() => {
-                      setShowSpinner(true)
-                      onClose()
-                    }}
-                    onOpen={onOpen}
-                    setDate={setDate}
-                    date={date}
-                    setDateSelected={setDateSelected}
-                  />
-                </Button> :
-                <Flex direction='column' w='100%'>
-                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
-                  <Flex direction="row" align='center' justify='space-between' >
-                    <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
-                    <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1} isLoading={!showSpinner}>
-                      {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
-                        `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
-                      <ModalCalendary
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        onOpen={onOpen}
-                        setDate={setDate}
-                        date={date}
-                        setDateSelected={setDateSelected}
-                      />
-                    </Button>
+            {haircutSelected &&
+              <Flex align='end' justify='center' w="100%" mb={3} mt={3}>
+                {!availableTime ?
+                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
+                    {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
+                    <ModalCalendary
+                      isOpen={isOpen}
+                      onClose={() => {
+                        setShowSpinner(true)
+                        onClose()
+                      }}
+                      onOpen={onOpen}
+                      setDate={setDate}
+                      date={date}
+                      setDateSelected={setDateSelected}
+                    />
+                  </Button> :
+                  <Flex direction='column' w='100%'>
+                    <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
+                    <Flex direction="row" align='center' justify='space-between' >
+                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} />
+                      <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1} isLoading={!showSpinner}>
+                        {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
+                          `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
+                        <ModalCalendary
+                          isOpen={isOpen}
+                          onClose={onClose}
+                          onOpen={onOpen}
+                          setDate={setDate}
+                          date={date}
+                          setDateSelected={setDateSelected}
+                        />
+                      </Button>
+                    </Flex>
                   </Flex>
-                </Flex>
 
-              }
+                }
 
 
-            </Flex>
+              </Flex>
+            }
 
             <Button
               background="button.cta"
@@ -249,11 +279,11 @@ export const getServerSideProps = canSSRGuestFast(async (ctx) => {
         }
       })
 
-    const response = await apiClient.get('/haircuts/fast',
+    const response = await apiClient.get('/haircuts/barber',
       {
         params: {
           user_id: user?.data?.id,
-          status: true,
+          status: true
         }
       })
 

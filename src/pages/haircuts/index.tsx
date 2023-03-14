@@ -1,52 +1,52 @@
-import { Button, Flex, Heading, Spinner, Stack, Switch, Text, useMediaQuery } from "@chakra-ui/react";
+import { Button, Flex, Heading, Spinner, Stack, Switch, Text, useMediaQuery, Link as ChackLink } from "@chakra-ui/react";
 import { Sidebar } from "@/components/sidebar";
 import Head from "next/head";
 import Link from "next/link";
 import { IoMdPricetag } from 'react-icons/io'
+import { AiOutlinePlus, AiOutlineLine } from "react-icons/ai";
 import { canSSRAuth } from "@/utils/canSSRAuth";
-import { ChangeEvent, useContext, useState } from "react";
+import React, { useState } from "react";
 import { setupAPIClient } from "@/services/api";
-import { HaircutContext } from "@/contexts/HaircutContext";
 
-interface HaircutsItem {
+interface HaircutsBarber {
+  haircuts: BarberHaircuts[]
+}
+interface BarberHaircuts {
+  barber_name: string
+  id: string
+  haircuts: Haircut[]
+}
+interface Haircut {
   id: string
   name: string
-  price: number | string
+  price: number
   status: boolean
+  time: string
   user_id: string
+  barber_id: string
 }
 
-interface HaircutsProps {
-  haircuts: HaircutsItem[]
-}
-
-export default function Haircuts({ haircuts }: HaircutsProps) {
-  const { listHaircuts } = useContext(HaircutContext)
+export default function Haircuts({ haircuts }: HaircutsBarber) {
   const [isMobile] = useMediaQuery("(max-width: 800px)")
-  const [haircutList, setHaircutList] = useState<HaircutsItem[]>(haircuts || [])
   const [loader, setLoader] = useState(false)
   const [loadingItemId, setLoadingItemId] = useState(null);
-  const [disableHaircut, setDisableHaircut] = useState("enabled")
+  const [showHaircuts, setShowHaircuts] = useState({});
 
   function handleRegisterCut() {
     setLoader(true)
   }
 
-  async function handleDisable(e: ChangeEvent<HTMLInputElement>) {
-    if (e.target.value === 'disabled') {
-      setDisableHaircut("enabled")
-      const refreshHaircuts = await listHaircuts(disableHaircut)
-      setHaircutList(refreshHaircuts)
-      return
-    }
-    setDisableHaircut("disabled")
-    const refreshHaircuts = await listHaircuts(disableHaircut)
-    setHaircutList(refreshHaircuts)
-  }
-
   function handleClickItem(haircutId) {
     setLoadingItemId(haircutId);
   }
+
+  const handleShowHaircuts = (barberName: string) => {
+    setShowHaircuts({
+      ...showHaircuts,
+      [barberName]: !showHaircuts[barberName],
+    });
+    
+  };
 
   return (
     <>
@@ -70,52 +70,43 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
                 </Link>}
 
               </Flex>
-
-              {isMobile ? <Flex justify='space-between' w='100%'>
-                <Stack alignItems="center" direction="row">
-                  <Text fontSize="2xs" fontWeight="bold" color="white">{disableHaircut === 'disabled' ? "DESATIVADOS" : "ATIVADOS"}</Text>
-                  <Switch colorScheme="green" size="lg" isChecked={disableHaircut === 'disabled' ? false : true} value={disableHaircut} onChange={(e: ChangeEvent<HTMLInputElement>) => handleDisable(e)} />
-                </Stack>
-
-
-                {isMobile && <Link href="/haircuts/new" onClick={handleRegisterCut}>
-                  <Button color="white" bg="barber.400" _hover={{ bg: "gray.900" }} isLoading={loader}>
-                    Cadastrar novo
-                  </Button>
-                </Link>}
-              </Flex> : <Stack alignItems="center" direction="row">
-                <Text fontSize="2xs" fontWeight="bold" color="white">{disableHaircut === 'disabled' ? "DESATIVADOS" : "ATIVADOS"}</Text>
-                <Switch colorScheme="green" size="lg" isChecked={disableHaircut === 'disabled' ? false : true} value={disableHaircut} onChange={(e: ChangeEvent<HTMLInputElement>) => handleDisable(e)} />
-              </Stack>}
-
-
             </Flex>
 
-
-            {haircutList?.map(haircut => {
-              const priceFormat = parseFloat(String(haircut?.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-              const isItemLoading = loadingItemId === haircut.id;
+            {haircuts && haircuts.map(barber => {
               return (
-                <Link key={haircut.id} href={`/haircuts/${haircut.id}`} onClick={() => handleClickItem(haircut.id)} >
-                  <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
-                    {isItemLoading ? <Spinner color='button.cta' speed='0.8s' size='md' /> : (
-                      <>
-                        <Flex direction="row" alignItems="center" justifyContent="center" mb={isMobile ? "10px" : "0"}>
-                          <IoMdPricetag color="#fba931" size={28} />
-                          <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{haircut.name}</Text>
-                        </Flex>
-                        <Text color="white" fontWeight="bold">Preço: {priceFormat}</Text>
-                      </>
-                    )}
+                <React.Fragment key={barber?.barber_name}>
+                  <Flex align='center' mb={2} gap={3}>
+                    <Heading fontSize="xl" color="white" ml={2} fontWeight="bold">Barbeiro: {barber?.barber_name}</Heading>
+                    <Button bg='transparent' _hover={{ bg: '#1B1C29' }} onClick={() => handleShowHaircuts(barber.barber_name)}>
+                      {showHaircuts[barber.barber_name] ? <AiOutlineLine color="#fff" size={20} /> : <AiOutlinePlus color="#fff" size={20} />}
 
+                    </Button>
                   </Flex>
-                </Link>
-              );
+                  {showHaircuts[barber.barber_name] && barber?.haircuts?.map(haircut => {
+                    const priceFormat = parseFloat(String(haircut?.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    const isItemLoading = loadingItemId === haircut.id;
+                    return (
+                      <Link key={haircut.id} href={`/haircuts/${haircut.id}`} onClick={() => handleClickItem(haircut.id)} >
+                        <Flex cursor="pointer" w="100%" p={4} bg="barber.400" direction={isMobile ? "column" : "row"} alignItems={isMobile ? "flex-start" : "center"} rounded={4} mb={4} justifyContent="space-between">
+                          {isItemLoading ? <Spinner color='button.cta' speed='0.8s' size='md' /> : (
+                            <>
+                              <Flex direction="row" alignItems="center" justifyContent="center" mb={isMobile ? "10px" : "0"}>
+                                <IoMdPricetag color="#fba931" size={28} />
+                                <Text color="white" fontWeight="bold" ml={4} noOfLines={2}>{haircut?.name} - </Text>
+                                <Text color="white" fontWeight="bold" ml={1}>{(haircut?.time)} min</Text>
+                              </Flex>
+                              <Text color="white" fontWeight="bold">Preço: {priceFormat}</Text>
+                            </>
+                          )}
+                        </Flex>
+                      </Link>
+                    );
+                  })}
+                </React.Fragment>
+              )
             })}
 
-
           </Flex>
-
         </Flex>
       </Sidebar >
     </>
@@ -127,7 +118,7 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
   try {
 
     const apiClient = setupAPIClient(ctx)
-    const response = await apiClient.get('/haircuts',
+    const response = await apiClient.get('/haircuts/barber',
       {
         params: {
           status: true

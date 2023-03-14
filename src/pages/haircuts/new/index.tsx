@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Input, useMediaQuery, Text } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, useMediaQuery, Text, Select } from "@chakra-ui/react";
 import { Sidebar } from "@/components/sidebar";
 import Head from "next/head";
 import Link from "next/link";
@@ -11,19 +11,27 @@ import { toast } from "react-toastify";
 import { validatedValueHaircut } from "@/utils/validatedValueHaircut";
 import { parseOneTimeString } from "@/utils/validatedTime";
 
-
+interface BarbersItem {
+  id: string
+  barber_name: string
+  hair_cuts: number
+  status: boolean
+  available_at?: string[]
+}
 interface NewHaircutProps {
   subscriptions: string,
-  count: number
+  count: number,
+  barbers: BarbersItem[]
 }
 
-export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
+export default function NewHaircut({ subscriptions, count, barbers }: NewHaircutProps) {
   const { registerHaircut } = useContext(HaircutContext)
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
   const [time, setTime] = useState("")
   const [loader, setLoader] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [barberSelected, setBarberSelected] = useState<BarbersItem>()
   const [isMobile] = useMediaQuery("(max-width: 800px)")
 
   async function handleRegisterHaircut() {
@@ -36,8 +44,13 @@ export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
     const newTime = (parseOneTimeString(time))
 
     setLoader(true)
-    await registerHaircut({ name, price: newPrice, time: newTime })
+    await registerHaircut({ name, price: newPrice, time: newTime, barber_id: barberSelected?.id})
     setLoader(false)
+  }
+
+  async function handleChangeSelectBarber(id: string) {
+    const barber = barbers?.find(item => item.id === id)
+    setBarberSelected(barber)
   }
 
   function handleBackButton() {
@@ -75,25 +88,60 @@ export default function NewHaircut({ subscriptions, count }: NewHaircutProps) {
 
             <Flex w="100%" bg="barber.400" align="center" justify="center" pt={8} pb={8} direction="column" rounded={4}>
 
-              <Heading mb={4} fontSize="2xl" ml={4} color="white" >Cadastrar modelo</Heading>
+              <Heading mb={4} fontSize="2xl" ml={4} color="white" >Cadastrar modelo de corte</Heading>
+              <Flex direction="column" w="85%">
+                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
+                <Select
+                  color="white"
+                  w="100%"
+                  bg="gray.900"
+                  size="lg"
+                  mb={3}
+                  onChange={(e) => handleChangeSelectBarber(e.target.value)}
+                  defaultValue=""
+                >
+                  <option disabled value="">Selecione um barbeiro</option>
+                  {barbers?.map(item => {
+                    return (
+                      <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
+                    )
+                  })}
+                </Select>
 
-              <Input color="white" placeholder="Nome do corte" w="85%" bg="gray.900" type="text" size="lg" mb={3}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              </Flex>
 
-              <Input color="white" placeholder="Valor do corte ex: 59.90" w="85%" bg="gray.900" type="text" size="lg" mb={4}
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
+              {barberSelected &&
+                <Flex direction="column" w="85%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Digite o nome do corte:</Text>
+                  <Input color="white" placeholder="Nome do corte" w="100%" bg="gray.900" type="text" size="lg" mb={3}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Flex>
+              }
 
-              <Input color="white" placeholder="Tempo do corte ex: 30" w="85%" bg="gray.900" type="text" size="lg" mb={4}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
+              {name &&
+                <Flex direction="column" w="85%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Digite o preço do corte:</Text>
+                  <Input color="white" placeholder="Valor do corte ex: 59.90" w="100%" bg="gray.900" type="text" size="lg" mb={4}
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </Flex>
+              }
+
+              {price &&
+                <Flex direction="column" w="85%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Digite o tempo do corte:</Text>
+                  <Input color="white" placeholder="Tempo do corte ex: 30" w="100%" bg="gray.900" type="text" size="lg" mb={4}
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                  />
+                </Flex>
+              }
 
               <Button
-                isLoading={loader} onClick={handleRegisterHaircut} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }} isDisabled={!subscriptions && count >= 3}
+                isLoading={loader} onClick={handleRegisterHaircut} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }} isDisabled={!time}
               >
                 Cadastrar
               </Button>
@@ -131,10 +179,18 @@ export const getServerSideProps = canSSRAuth(async (ctx) => {
     const response = await apiClient.get('/check')
     const count = await apiClient.get('/haircuts/count')
 
+    const barbers = await apiClient.get('/barbers',
+      {
+        params: {
+          status: true
+        }
+      })
+
     return {
       props: {
         subscriptions: response.data?.subscriptions?.status === 'active' ? true : false,
-        count: count.data
+        count: count.data,
+        barbers: barbers.data
       }
     }
 

@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import { validatedValueHaircut } from "@/utils/validatedValueHaircut";
 import { parseOneTimeString } from "@/utils/validatedTime";
 
-
 export interface DetailProps {
     id: string
     name: string
@@ -96,30 +95,30 @@ export default function EditHaircut({ haircutDetail, subscriptions }: HaircutPro
 
                             <Heading mb={4} fontSize="2xl" ml={4} color="white" >Editar corte</Heading>
 
-                            <Input color="white" placeholder={name} w="85%" bg="gray.900" type="text" size="lg" mb={3}
+                            <Flex direction="column" w="85%">
+                                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Nome do corte:</Text>
+                                <Input color="white" placeholder={name} w="100%" bg="gray.900" type="text" size="lg" mb={3}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </Flex>
 
-                                onChange={(e) => setName(e.target.value)}
-                            />
+                            <Flex direction="column" w="85%">
+                                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Valor do corte:</Text>
+                                <Input color="white" placeholder={precoFormatado} w="100%" bg="gray.900" type="text" size="lg" mb={3}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                />
+                            </Flex>
 
-                            <Input color="white" placeholder={precoFormatado} w="85%" bg="gray.900" type="text" size="lg" mb={4}
+                            <Flex direction="column" w="85%">
+                                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Tempo do corte:</Text>
+                                <Input color="white" placeholder={`${time} min`} w="100%" bg="gray.900" type="text" size="lg" mb={6}
 
-                                onChange={(e) => setPrice(e.target.value)}
-                            />
-
-                            <Input color="white" placeholder={`${time} min`} w="85%" bg="gray.900" type="text" size="lg" mb={4}
-
-                                onChange={(e) => setTime(e.target.value)}
-                            />
-
-                            <Flex w="85%">
-                                <Stack alignItems="center" direction="row" mb={4} alignSelf="flex-start" >
-                                    <Switch colorScheme="green" size="lg" isChecked={disableHaircut === 'disabled' ? false : true} value={disableHaircut} onChange={(e: ChangeEvent<HTMLInputElement>) => handleDisable(e)} />
-                                    <Text fontSize="1xs" fontWeight="bold" color={disableHaircut === 'disabled' ? "red.500" : "green"}>{disableHaircut === 'disabled' ? "Desativado" : "Ativado"}</Text>
-                                </Stack>
+                                    onChange={(e) => setTime(e.target.value)}
+                                />
                             </Flex>
 
                             <Button
-                                isDisabled={!subscriptions} isLoading={loader} onClick={handleUpdateHaircut} w="85%" mb={6} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
+                                isDisabled={!subscriptions} isLoading={loader} onClick={handleUpdateHaircut} w="85%" mb={4} bg="button.cta" size="lg" _hover={{ bg: '#ffb13e' }}
                             >
                                 Editar
                             </Button>
