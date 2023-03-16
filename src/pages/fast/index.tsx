@@ -13,6 +13,7 @@ import { setConfigUserFromEnv } from "@/utils/isClient";
 import SelectTime from "@/components/timerPicker";
 import { validatedAvaliableTime } from "@/utils/validatedAvaliableTime";
 import { ModalResume } from "@/components/modalResume";
+import FadeIn from "@/components/fadeIn";
 
 interface HaircutsItem {
   id: string
@@ -113,7 +114,7 @@ export default function FastSchedule({ barbers, user }: HaircutsProps) {
       });
     }
 
-    if(openResume) {
+    if (openResume) {
       setDataResume({
         customer: name,
         haircut: haircutSelected,
@@ -170,90 +171,99 @@ export default function FastSchedule({ barbers, user }: HaircutsProps) {
             </Flex>
 
             {name &&
-              <Flex direction="column" w="100%">
-                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
-                <Select
-                  color="white"
-                  w="100%"
-                  bg="gray.900"
-                  size="lg"
-                  mb={3}
-                  onChange={(e) => handleChangeSelectBarber(e.target.value)}
-                  defaultValue=""
-                >
-                  <option disabled value="">Selecione um barbeiro</option>
-                  {barbers?.map(item => {
-                    return (
-                      <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
-                    )
-                  })}
-                </Select>
-              </Flex>
+              <FadeIn>
+                <Flex direction="column" w="100%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o barbeiro:</Text>
+                  <Select
+                    color="white"
+                    w="100%"
+                    bg="gray.900"
+                    size="lg"
+                    mb={3}
+                    onChange={(e) => handleChangeSelectBarber(e.target.value)}
+                    defaultValue=""
+                  >
+                    <option disabled value="">Selecione um barbeiro</option>
+                    {barbers?.map(item => {
+                      return (
+                        <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.barber_name}</option>
+                      )
+                    })}
+                  </Select>
+                </Flex>
+              </FadeIn>
+
             }
 
             {barberSelected &&
-              <Flex direction="column" w="100%">
-                <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o corte:</Text>
-                <Select
-                  color="white"
-                  w="100%"
-                  bg="gray.900"
-                  size="lg"
-                  mb={3}
-                  onChange={(e) => handleChangeSelectHaircut(e.target.value)}
-                  defaultValue=""
-                >
-                  <option disabled value="">Selecione um corte</option>
-                  {barberSelected?.haircuts.map(item => {
-                    if (item.status) {
-                      return (
-                        <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
-                      )
-                    }
-                    return null
-                  })}
-                </Select>
-              </Flex>
+              <FadeIn>
+                <Flex direction="column" w="100%">
+                  <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o corte:</Text>
+                  <Select
+                    color="white"
+                    w="100%"
+                    bg="gray.900"
+                    size="lg"
+                    mb={3}
+                    onChange={(e) => handleChangeSelectHaircut(e.target.value)}
+                    defaultValue=""
+                  >
+                    <option disabled value="">Selecione um corte</option>
+                    {barberSelected?.haircuts.map(item => {
+                      if (item.status) {
+                        return (
+                          <option style={{ background: "#1b1c29" }} key={item?.id} value={item?.id}>{item?.name}</option>
+                        )
+                      }
+                      return null
+                    })}
+                  </Select>
+                </Flex>
+              </FadeIn>
             }
 
             {haircutSelected &&
-              <Flex align='end' justify='center' w="100%" mb={3} mt={3}>
-                {!availableTime ?
-                  <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
-                    {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
-                    <ModalCalendary
-                      isOpen={isOpen}
-                      onClose={() => {
-                        setShowSpinner(true)
-                        onClose()
-                      }}
-                      onOpen={onOpen}
-                      setDate={setDate}
-                      date={date}
-                      setDateSelected={setDateSelected}
-                    />
-                  </Button> :
-                  <Flex direction='column' w='100%'>
-                    <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
-                    <Flex direction="row" align='center' justify='space-between' >
-                      <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} setOpenResume={setOpenResume} />
-                      <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1} isLoading={!showSpinner}>
-                        {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
-                          `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
-                        {!openResume &&
-                          <ModalCalendary
-                            isOpen={isOpen}
-                            onClose={onClose}
-                            onOpen={onOpen}
-                            setDate={setDate}
-                            date={date}
-                            setDateSelected={setDateSelected}
-                          />}
-                      </Button>
-                    </Flex>
-                  </Flex>
-                }
-              </Flex>
+              <FadeIn>
+                <Flex align='end' justify='center' w="100%" mb={3} mt={3}>
+                  {!availableTime ?
+                    <Button onClick={handleClickItem} w="100%" h="45px" bg='#fff' isLoading={showSpinner}>
+                      {!date ? "Escolha o dia" : `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`}
+                      <ModalCalendary
+                        isOpen={isOpen}
+                        onClose={() => {
+                          setShowSpinner(true)
+                          onClose()
+                        }}
+                        onOpen={onOpen}
+                        setDate={setDate}
+                        date={date}
+                        setDateSelected={setDateSelected}
+                      />
+                    </Button> :
+                    <FadeIn>
+                      <Flex direction='column' w='100%'>
+                        <Text color="white" mb={1} fontSize="xl" fontWeight="bold">Escolha o horário:</Text>
+                        <Flex direction="row" align='center' justify='space-between' >
+                          <SelectTime availableTime={validatedAvaliableTime(availableTime)} timeUsed={timeUsed} initialAvailableTime={validatedAvaliableTime(initialAvailableTime)} timesAlreadyUsed={validatedAvaliableTime(timesUsed)} setTimeToUsed={setTimeToUsed} setOpenResume={setOpenResume} />
+                          <Button onClick={handleClickItem} h="40px" w={isMobileSmall ? "30%" : (isMobile ? "50%" : "60%")} bg='white' p={1} isLoading={!showSpinner}>
+                            {!date ? "Escolha o dia" : (isMobileSmall ? `Dia: ${date.getDate()}/${date.getMonth() + 1}` :
+                              `Corte dia: ${date.getDate()}/${date.getMonth() + 1}`)}
+                            {!openResume &&
+                              <ModalCalendary
+                                isOpen={isOpen}
+                                onClose={onClose}
+                                onOpen={onOpen}
+                                setDate={setDate}
+                                date={date}
+                                setDateSelected={setDateSelected}
+                              />}
+                          </Button>
+                        </Flex>
+                      </Flex>
+                    </FadeIn>
+                  }
+                </Flex>
+              </FadeIn>
             }
 
             {openResume &&
@@ -308,7 +318,7 @@ export const getServerSideProps = canSSRGuestFast(async (ctx) => {
           user_id: user?.data?.id,
         }
       })
-    
+
     return {
       props: {
         barbers: barbers.data,
